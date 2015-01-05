@@ -15,6 +15,13 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -207,11 +214,49 @@ public class ParseDao {
         return gang;
     }
 
-    private static TagImage parseObjectAsTagImage(ParseObject pO){
+    private static TagImage parseObjectAsTagImage(PTagImage pO){
         TagImage tag = new TagImage();
-        tag.id = pO.getString(PTagImage.COLUMN_ID);
-        tag.image = pO.getString(PTagImage.COLUMN_IMAGE);
+        tag.id = pO.getId();
+        byte[] bImage = pO.getImage();
+
+        try {
+            tag.image = (SerializablePath) deserialize(bImage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return tag;
+    }
+
+    private static PTagImage tagImageAsParseObject(TagImage tI){
+        PTagImage pO;
+        if(tI.id != null){
+            pO = PTagImage.createWithoutData(tI.id);
+        }else{
+            pO = new PTagImage();
+        }
+        byte[] bImage = null;
+        try {
+            bImage = serialize(tI.image);
+            pO.setImage(bImage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return pO;
+    }
+
+    private static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = new ObjectInputStream(in);
+        return is.readObject();
+    }
+
+    private static byte[] serialize(Object obj) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(obj);
+        return out.toByteArray();
     }
 
     private static Tag parseObjectAsTag(PTag pO){

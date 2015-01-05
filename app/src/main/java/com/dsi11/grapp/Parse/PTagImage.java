@@ -20,6 +20,13 @@ public class PTagImage extends ParseObject {
         put(COLUMN_ID,id);
     }
 
+    public byte[] getImage(){
+        return getBytes(COLUMN_IMAGE);
+    }
+
+    public void setImage(byte[] image){
+        put(COLUMN_IMAGE,image);
+    }
 
     public static PTagImage createWithoutData(String id){
         return ParseObject.createWithoutData(PTagImage.class, id);

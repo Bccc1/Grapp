@@ -46,6 +46,9 @@ public class MapsActivity extends FragmentActivity {
         //testObject.put("foo", "bar");
         //testObject.saveInBackground();
 
+        //start the draw activity
+        //startActivity(new Intent(this, DrawTagActivity.class));
+
         if(isUserConfigured()){
             //TODO lade Nutzerdaten
         }else{

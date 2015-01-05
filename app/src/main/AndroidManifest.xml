@@ -42,6 +42,10 @@
             android:name=".NewGangActivity"
             android:label="@string/title_activity_new_gang" >
         </activity>
+        <activity
+            android:name=".DrawTagActivity"
+            android:label="@string/title_activity_draw_tag" >
+        </activity>
     </application>
 
 </manifest>
