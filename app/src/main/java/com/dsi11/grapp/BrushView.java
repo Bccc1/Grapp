@@ -13,8 +13,21 @@ import android.view.View;
  * Created by David on 05.01.15.
  */
 public class BrushView extends View {
+
+    public void setColor(int color){
+        brush.setColor(color);
+        // Force a view to draw again
+        postInvalidate();
+    }
+
     private Paint brush = new Paint();
-    private SerializablePath path = new SerializablePath();
+    //private SerializablePath path = new SerializablePath();
+    private Path path = new Path();
+
+    public SerializablePath getPath(){
+        //return path;
+        return null;
+    }
 
     public BrushView(Context context) {
         super(context);

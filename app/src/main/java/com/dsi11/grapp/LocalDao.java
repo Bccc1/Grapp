@@ -7,7 +7,10 @@ import com.dsi11.grapp.Core.Player;
  * Created by David on 03.01.2015.
  */
 public class LocalDao {
-    public static Player getPlayer(){
+    /** TODO Dummy speicher, soll durch SQLite DB ersetzt werden */
+    private static Player player = null;
+
+    public static void initFakeData(){
         Player player = new Player();
         player.name="Player4Life";
         player.id="6jI0lYlUWB";
@@ -16,6 +19,13 @@ public class LocalDao {
         gang.name="Bloods";
         gang.leader=player;
         player.gang=gang;
+        savePlayer(player);
+    }
+    public static Player getPlayer(){
         return player;
+    }
+
+    public static void savePlayer(Player player) {
+        LocalDao.player = player;
     }
 }

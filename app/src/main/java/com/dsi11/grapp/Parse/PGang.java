@@ -54,11 +54,11 @@ public class PGang extends ParseObject {
         put(COLUMN_TAG,tag);
     }
 
-    public String getColor(){
-        return getString(COLUMN_COLOR);
+    public Integer getColor(){
+        return getInt(COLUMN_COLOR);
     }
 
-    public void setColor(String color){
+    public void setColor(Integer color){
         put(COLUMN_COLOR,color);
     }
 

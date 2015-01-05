@@ -1,5 +1,6 @@
 package com.dsi11.grapp;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,9 +11,12 @@ import android.widget.Button;
 
 public class DrawTagActivity extends ActionBarActivity {
 
-    Button btnReset;
-    Button btnOk;
-    BrushView brushView;
+    public static final String PARAM_COLOR = "color";
+    public static final String PARAM_PATH = "path";
+    private String mKey;
+    private Button btnReset;
+    private Button btnOk;
+    private BrushView brushView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +32,27 @@ public class DrawTagActivity extends ActionBarActivity {
                 brushView.reset();
             }
         });
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishWithResult();
+            }
+        });
+
+        Bundle b = getIntent().getExtras();
+        if(b!=null){
+            Integer color = b.getInt(PARAM_COLOR);
+            if (color != null) {
+                brushView.setColor(color);
+            }
+        }
+    }
+
+    private void finishWithResult(){
+        Intent data = new Intent();
+        data.putExtra(PARAM_PATH,brushView.getPath());
+        setResult(RESULT_OK,data);
+        finish();
     }
 
 

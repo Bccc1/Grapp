@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:text="Gangname"
         android:id="@+id/textViewLabelName"
-        android:layout_alignBottom="@+id/editTextName"
+        android:layout_alignBottom="@+id/newGang_editText_name"
         android:layout_alignParentStart="true" />
 
     <EditText
@@ -27,7 +27,7 @@
         android:inputType="textPersonName"
         android:text="Name"
         android:ems="10"
-        android:id="@+id/editTextName"
+        android:id="@+id/newGang_editText_name"
         android:layout_below="@+id/textViewCreateGangTitle"
         android:layout_toRightOf="@id/textViewLabelName" />
 
@@ -52,27 +52,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Gründen"
-        android:id="@+id/btnCreateGang"
+        android:id="@+id/newGang_btn_createGang"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="38dp"
-        android:onClick="onContinueButtonClicked" />
+        android:layout_marginBottom="38dp" />
 
     <ImageView
         android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
         android:layout_width="200px"
         android:layout_height="200px"
-        android:id="@+id/imageView2"
-        android:layout_below="@+id/editTextName"
+        android:id="@+id/newGang_imageView_tag"
+        android:layout_below="@+id/newGang_editText_name"
         android:layout_toRightOf="@+id/textViewLabelTag" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Farbe wählen"
-        android:id="@+id/btnColorPicker"
-        android:layout_below="@+id/imageView2"
+        android:id="@+id/newGang_btn_ColorPicker"
+        android:layout_below="@+id/newGang_imageView_tag"
         android:layout_toRightOf="@+id/textViewLabelColor" />
 
 </RelativeLayout>

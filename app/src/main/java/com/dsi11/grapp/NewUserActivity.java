@@ -21,8 +21,11 @@ public class NewUserActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
-        editTextUsername = (EditText) findViewById(R.id.editTextUsername);
+        editTextUsername = (EditText) findViewById(R.id.newUser_editText_username);
         //TODO Prüfen ob lokal schon unvollständige Userdaten existieren und dann direkt zum Gangdialog
+        if(LocalDao.getPlayer() != null){
+            showGangDialog();
+        }
     }
 
     private boolean usernameExists(String username){
@@ -32,6 +35,7 @@ public class NewUserActivity extends ActionBarActivity {
 
     private Player saveUser(Player player){
         ParseDao.savePlayer(player);
+        LocalDao.savePlayer(player);
         //Eigentlich sollte hier das Ergebnis von savePlayer zurückgebeben werden,
         //allerdings ist das evtl noch kaputt
         return player;
@@ -45,29 +49,33 @@ public class NewUserActivity extends ActionBarActivity {
             Player player = new Player();
             player.name = username;
             Player playerNew = saveUser(player);
-            if(playerNew!=null){
-                //Wahl ob neue Gang oder Gang beitreten
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(this)
-                        .setTitle("Die Gang")
-                        .setMessage("Willst du eine eigene Gang gründen oder dich einer bestehenden anschließen?")
-                        .setPositiveButton("Neue Gang", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(getApplicationContext(), NewGangActivity.class);
-                                startActivity(intent);
-                                dialog.cancel();
-                            }
-                        })
-                        .setNegativeButton("bestehender Gang anschließen", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                //TODO Gang übersicht Activity starten
-                                dialog.cancel();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert);
-                AlertDialog alert11 = builder1.create();
-                alert11.show();
+            if(playerNew!=null){//TODO Fehlerbehandlung
+                showGangDialog();
+                finish(); //Was passiert, wenn der Dialog mit der Back taste abgebrochen wird?
             }
         }
+    }
+    /** Wahl ob neue Gang oder Gang beitreten */
+    private void showGangDialog(){
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this)
+                .setTitle("Die Gang")
+                .setMessage("Willst du eine eigene Gang gründen oder dich einer bestehenden anschließen?")
+                .setPositiveButton("Neue Gang", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getApplicationContext(), NewGangActivity.class);
+                        startActivity(intent);
+                        dialog.cancel();
+                    }
+                })
+                .setNegativeButton("bestehender Gang anschließen", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //TODO Gang Übersicht Activity starten
+                        dialog.cancel();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert);
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
     }
 
     @Override

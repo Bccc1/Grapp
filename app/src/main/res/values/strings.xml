@@ -9,7 +9,7 @@
     <string name="title_activity_new_gang">NewGangActivity</string>
     <string name="title_activity_draw_tag">DrawTagActivity</string>
     <string name="settings_bg_color_confirm">OK</string>
-    <string name="settings_default_color_confirm">Default</string>
+    <string name="settings_default_color_confirm">Abbrechen</string>
     <string name="settings_bg_color_dialog">Farbwähler</string>
 
 </resources>

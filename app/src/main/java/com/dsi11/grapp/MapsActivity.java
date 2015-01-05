@@ -47,22 +47,27 @@ public class MapsActivity extends FragmentActivity {
         //testObject.saveInBackground();
 
         //start the draw activity
-        //startActivity(new Intent(this, DrawTagActivity.class));
+        startActivity(new Intent(this, DrawTagActivity.class));
 
+        //start the newGang activity
+        //startActivity(new Intent(this, NewGangActivity.class));
+
+        LocalDao.initFakeData();
         if(isUserConfigured()){
-            //TODO lade Nutzerdaten
+            //TODO lade Nutzerdaten (Sinnvoll?)
         }else{
             Intent intent = new Intent(this, NewUserActivity.class);
             startActivity(intent);
         }
     }
 
-    private boolean isUserConfigured(){
-        //Sollte prüfen ob die Anwendung bereits konfiguriert wurde/Ein User im lokalen Cache existiert.
+    /**
+     * Sollte prüfen ob die Anwendung bereits konfiguriert wurde,
+     * bzw ein User im lokalen Cache existiert
+     */
+    private boolean isUserConfigured() {
         Player player = LocalDao.getPlayer();
-        if(player!=null && player.gang != null)
-            return true;
-        return false;
+        return player != null && player.gang != null;
     }
 
     @Override

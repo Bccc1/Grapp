@@ -8,31 +8,31 @@
 
     <TextView android:text="Nutzer anlegen" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textViewCreateUserTitle"
+        android:id="@+id/newUser_textView_title"
         android:layout_centerHorizontal="true"
         android:textSize="40dp"
         android:paddingBottom="20dp" />
 
     <TextView android:text="Um deine Karriere als Sprayer zu beginnen, wähle deinen Namen" android:layout_width="wrap_content"
-        android:layout_below="@id/textViewCreateUserTitle"
+        android:layout_below="@id/newUser_textView_title"
         android:layout_height="wrap_content"
-        android:id="@+id/textView" />
+        android:id="@+id/newUser_textView_text" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:text="Name"
         android:ems="10"
-        android:id="@+id/editTextUsername"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentStart="true" />
+        android:id="@+id/newUser_editText_username"
+        android:layout_below="@+id/newUser_textView_text"
+        android:layout_alignParentStart="true"
+        android:hint="Name" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Weiter"
-        android:id="@+id/btnCreateUser"
+        android:id="@+id/newUser_btn_createUser"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="46dp"

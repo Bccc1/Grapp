@@ -9,6 +9,6 @@ public class Gang {
     public String id;
     public String name;
     public TagImage tag;
-    public String color; //TODO Typ muss evlt. noch geändert werden, aktuell 8BitHex->#FF00CC
+    public Integer color;
     public Player leader;
 }
