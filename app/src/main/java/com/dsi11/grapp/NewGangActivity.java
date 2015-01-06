@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,12 +57,15 @@ public class NewGangActivity extends ActionBarActivity implements ColorPickerDia
         });
         editTextName = (EditText) findViewById(R.id.newGang_editText_name);
         gang = new Gang();
-        gang.color = Color.GRAY;
+        gang.color = Color.BLACK;
     }
 
     private void openTagEditor(){
         Intent tagIntent = new Intent(this,DrawTagActivity.class);
-        tagIntent.putExtra(DrawTagActivity.PARAM_COLOR,btnColorPicker.getDrawingCacheBackgroundColor());
+        tagIntent.putExtra(DrawTagActivity.PARAM_COLOR,gang.color);
+        if(path!=null){
+            tagIntent.putExtra(DrawTagActivity.PARAM_PATH,path);
+        }
         startActivityForResult(tagIntent,EDIT_TAG_REQUEST);
     }
 
@@ -70,9 +74,16 @@ public class NewGangActivity extends ActionBarActivity implements ColorPickerDia
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == EDIT_TAG_REQUEST){
             if(resultCode == RESULT_OK){
-                SerializablePath path = (SerializablePath) data.getSerializableExtra(DrawTagActivity.PARAM_PATH);
-                this.path = path;
-                refreshTagView();
+                if(data != null && data.hasExtra(DrawTagActivity.PARAM_PATH)) {
+                    Bundle b = data.getExtras();
+                    SerializablePath path = (SerializablePath) b.getSerializable(DrawTagActivity.PARAM_PATH);
+                    if (path != null) {
+                        this.path = path;
+                        refreshTagView();
+                    } else {
+                        Log.w("NewGangActivity", "EditTag resulted in path being empty");
+                    }
+                }
             }
         }
     }
@@ -99,7 +110,7 @@ public class NewGangActivity extends ActionBarActivity implements ColorPickerDia
     }
 
     private void openColorPicker(){
-        ColorPickerDialog color = new ColorPickerDialog(this,this, "picker", Color.BLACK, btnColorPicker.getDrawingCacheBackgroundColor());
+        ColorPickerDialog color = new ColorPickerDialog(this,this, "picker", Color.BLACK, gang.color);
         color.show();
     }
 
@@ -129,6 +140,6 @@ public class NewGangActivity extends ActionBarActivity implements ColorPickerDia
     public void colorChanged(String key, int color) {
         gang.color=color;
         btnColorPicker.setBackgroundColor(color);
-        //TODO Tag neuzeichnen
+        refreshTagView();
     }
 }

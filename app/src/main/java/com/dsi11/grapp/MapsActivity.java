@@ -47,10 +47,12 @@ public class MapsActivity extends FragmentActivity {
         //testObject.saveInBackground();
 
         //start the draw activity
-        startActivity(new Intent(this, DrawTagActivity.class));
+        //startActivity(new Intent(this, DrawTagActivity.class));
 
         //start the newGang activity
         //startActivity(new Intent(this, NewGangActivity.class));
+
+        //TODO Parse verhalten analysieren, dh create, update delete auf objekte mit referenzbäumen.
 
         LocalDao.initFakeData();
         if(isUserConfigured()){

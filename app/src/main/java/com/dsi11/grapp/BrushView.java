@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -16,17 +17,24 @@ public class BrushView extends View {
 
     public void setColor(int color){
         brush.setColor(color);
-        // Force a view to draw again
+        //set background color according to luminance of the brush color
+        if (Color.red(color) + Color.green(color) + Color.blue(color) < 384)
+            setBackgroundColor(Color.WHITE);
+        else
+            setBackgroundColor(Color.BLACK);
+        //Force a view to draw again
         postInvalidate();
     }
 
     private Paint brush = new Paint();
-    //private SerializablePath path = new SerializablePath();
-    private Path path = new Path();
+    private SerializablePath path = new SerializablePath();
 
     public SerializablePath getPath(){
-        //return path;
-        return null;
+        return path;
+    }
+
+    public void setPath(SerializablePath path){
+        this.path = path;
     }
 
     public BrushView(Context context) {

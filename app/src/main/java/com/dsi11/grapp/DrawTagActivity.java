@@ -3,17 +3,20 @@ package com.dsi11.grapp;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class DrawTagActivity extends ActionBarActivity {
 
     public static final String PARAM_COLOR = "color";
     public static final String PARAM_PATH = "path";
-    private String mKey;
     private Button btnReset;
     private Button btnOk;
     private BrushView brushView;
@@ -45,12 +48,37 @@ public class DrawTagActivity extends ActionBarActivity {
             if (color != null) {
                 brushView.setColor(color);
             }
+            if(b.containsKey(PARAM_PATH)){
+                SerializablePath path = (SerializablePath) b.getSerializable(PARAM_PATH);
+                if(path!=null){
+                    brushView.setPath(path);
+                }
+            }
         }
     }
 
     private void finishWithResult(){
         Intent data = new Intent();
-        data.putExtra(PARAM_PATH,brushView.getPath());
+        Bundle b = new Bundle();
+        byte[] ba = null;
+        try {
+            ba = Utils.serialize(brushView.getPath());
+            if(ba != null)
+                Log.i("DrawTagActivity", "serialization successfull");
+            SerializablePath newPath = (SerializablePath) Utils.deserialize(ba);
+            if(newPath != null){
+                Log.i("DrawTagActivity", "deserialization successfull");
+            }
+
+            Log.i("DrawTagActivity", "test successfull");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        b.putSerializable(PARAM_PATH, brushView.getPath());
+        data.putExtras(b);
         setResult(RESULT_OK,data);
         finish();
     }

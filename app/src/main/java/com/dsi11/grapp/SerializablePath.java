@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by David on 05.01.15.
@@ -19,6 +20,15 @@ public class SerializablePath extends Path implements Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
         in.defaultReadObject();
         drawThisPath();
+    }
+
+    //temp dummy method
+    public ArrayList<PathAction> getActions(){
+        return actions;
+    }
+
+    public void setActions(ArrayList<PathAction> actions){
+        this.actions = actions;
     }
 
     @Override

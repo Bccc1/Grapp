@@ -220,7 +220,7 @@ public class ParseDao {
         byte[] bImage = pO.getImage();
 
         try {
-            tag.image = (SerializablePath) deserialize(bImage);
+            tag.image = (SerializablePath) Utils.deserialize(bImage);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -238,7 +238,7 @@ public class ParseDao {
         }
         byte[] bImage = null;
         try {
-            bImage = serialize(tI.image);
+            bImage = Utils.serialize(tI.image);
             pO.setImage(bImage);
         } catch (IOException e) {
             e.printStackTrace();
@@ -246,18 +246,6 @@ public class ParseDao {
         return pO;
     }
 
-    private static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
-    }
-
-    private static byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
-    }
 
     private static Tag parseObjectAsTag(PTag pO){
         Tag tag = new Tag();

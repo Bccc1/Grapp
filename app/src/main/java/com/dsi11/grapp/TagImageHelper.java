@@ -4,12 +4,24 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 /**
  * Created by David on 05.01.15.
  */
 public class TagImageHelper {
     public static Bitmap tagAsBitmap(SerializablePath path, Integer color){
+        if(path == null){
+            Log.w("TagImageHelper", "SerializablePath is null");
+        }else{
+            if(path.getActions()==null){
+                Log.w("TagImageHelper", "SerializablePath.actions is null");
+            }else{
+                if(path.getActions().isEmpty()){
+                    Log.i("TagImageHelper", "SerializablePath.actions is empty");
+                }
+            }
+        }
         Bitmap bitmap = Bitmap.createBitmap(200,200, Bitmap.Config.ARGB_8888); //FIXME Größe ermitteln
         Canvas canvas = new Canvas(bitmap);
         Paint brush = new Paint();
