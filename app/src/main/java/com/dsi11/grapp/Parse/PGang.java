@@ -18,11 +18,11 @@ public class PGang extends ParseObject {
     public static final String COLUMN_LEADER = "Leader";
 
     public String getId(){
-        return getString(COLUMN_ID);
+        return getObjectId();
     }
 
     public void setId(String id){
-        put(COLUMN_ID,id);
+        setObjectId(id);
     }
 
     public String getName(){
@@ -67,10 +67,10 @@ public class PGang extends ParseObject {
     }
 
     public void setLeaderId(String id){
-        put(COLUMN_LEADER,ParseObject.createWithoutData(PPlayer.class,id));
+        put(COLUMN_LEADER,PPlayer.createWithoutData(id));
     }
 
-    public PPlayer getLeader(){
+    public PPlayer fetchLeader(){
         try{
             return (PPlayer) getParseObject(COLUMN_LEADER).fetch();
         }catch (ParseException e){
@@ -79,11 +79,19 @@ public class PGang extends ParseObject {
         return null;
     }
 
+    public PPlayer getLeader(){
+    return (PPlayer) getParseObject(COLUMN_LEADER);
+    }
+
     public void setLeader(PPlayer player){
         put(COLUMN_LEADER,player);
     }
 
     public static PGang createWithoutData(String id){
         return ParseObject.createWithoutData(PGang.class, id);
+    }
+
+    public static PGang create(){
+        return ParseObject.create(PGang.class);
     }
 }

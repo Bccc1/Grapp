@@ -15,11 +15,11 @@ public class PPlayer extends ParseObject {
     public static final String COLUMN_GANG = "Gang";
 
     public String getId(){
-        return getString(COLUMN_ID);
+        return getObjectId();
     }
 
     public void setId(String id){
-        put(COLUMN_ID,id);
+        setObjectId(id);
     }
 
     public String getName(){
@@ -30,13 +30,17 @@ public class PPlayer extends ParseObject {
         put(COLUMN_NAME,name);
     }
 
-    public PGang getGang(){
+    public PGang fetchGang(){
         try{
             return (PGang) getParseObject(COLUMN_GANG).fetch();
         }catch (ParseException e){
             e.printStackTrace();
         }
         return null;
+    }
+
+    public PGang getGang(){
+        return (PGang) getParseObject(COLUMN_GANG);
     }
 
     public void setGang(PGang gang){
@@ -53,5 +57,9 @@ public class PPlayer extends ParseObject {
 
     public static PPlayer createWithoutData(String id){
         return ParseObject.createWithoutData(PPlayer.class, id);
+    }
+
+    public static PPlayer create(){
+        return ParseObject.create(PPlayer.class);
     }
 }

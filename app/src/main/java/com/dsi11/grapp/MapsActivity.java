@@ -54,7 +54,9 @@ public class MapsActivity extends FragmentActivity {
 
         //TODO Parse verhalten analysieren, dh create, update delete auf objekte mit referenzbäumen.
 
-        LocalDao.initFakeData();
+        LocalDao.initFakeData2();
+        Player savedPlayer = ParseDao.savePlayer(LocalDao.getPlayer());
+
         if(isUserConfigured()){
             //TODO lade Nutzerdaten (Sinnvoll?)
         }else{

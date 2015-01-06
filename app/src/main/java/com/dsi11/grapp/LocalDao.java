@@ -1,5 +1,8 @@
 package com.dsi11.grapp;
 
+import android.graphics.Color;
+import android.util.Log;
+
 import com.dsi11.grapp.Core.Gang;
 import com.dsi11.grapp.Core.Player;
 
@@ -18,6 +21,17 @@ public class LocalDao {
         gang.id="8RWHvwbf8f";
         gang.name="Bloods";
         gang.leader=player;
+        player.gang=gang;
+        savePlayer(player);
+    }
+
+    public static void initFakeData2(){
+        Player player = new Player();
+        player.name="Testplayer";
+        Gang gang = new Gang();
+        gang.name="Testgang";
+        gang.leader=player;
+        gang.color= Color.MAGENTA;
         player.gang=gang;
         savePlayer(player);
     }

@@ -1,5 +1,7 @@
 package com.dsi11.grapp;
 
+import android.util.Log;
+
 import com.dsi11.grapp.Core.Gang;
 import com.dsi11.grapp.Core.Player;
 import com.dsi11.grapp.Core.Tag;
@@ -30,14 +32,67 @@ import java.util.List;
  */
 public class ParseDao {
 
-    public static Player savePlayer(Player mPlayer){
-        ParseObject player = new ParseObject(PPlayer.CLASS_NAME);
-        player.put(PPlayer.COLUMN_NAME, mPlayer.name);
-        if(mPlayer.gang!=null)
-            player.put(PPlayer.COLUMN_GANG,mPlayer.gang);
-        player.saveInBackground(); //FIXME Ist das Async? Wenn ja, darf ich hier noch kein Get machen.
-        List<Player> newPlayer = getPlayerByName(mPlayer.name);
-        return newPlayer.isEmpty() ? null : newPlayer.get(0);
+    public static Player savePlayer(Player mPlayer) {
+        /** das Speichern des Leaders ist ein blöder Sonderfall, +
+         * da wenn der Player auf die Gang verweist und diese als Leader wieder auf den selben Player verweist,
+         * eine "circular dependency" vorliegt.
+         * */
+        boolean playerIsLeader = false;
+
+        PPlayer player = PPlayer.create();
+        player.setName(mPlayer.name);
+        if (mPlayer.gang != null) {
+            if (mPlayer.gang.leader != null) {
+                playerIsLeader = mPlayer.gang.leader.name.equals(mPlayer.name);
+                Log.i("Superimportantstuff!!!!!!!!!!Superimportantstuff","Player is Leader is "+playerIsLeader);
+            }
+            PGang gang = PGang.create();
+            gang.setName(mPlayer.gang.name);
+            gang.setColor(mPlayer.gang.color);
+            if (!playerIsLeader) {
+                gang.setLeaderId(mPlayer.gang.leader.id);
+            }
+            player.setGang(gang);
+        }
+        try {
+            player.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+        Log.i("Superimportantstuff!!!!!!!!!!Superimportantstuff","Player saved");
+        List<Player> newPlayers = getPlayerByName(mPlayer.name);
+        Player newPlayer = null;
+        if (!newPlayers.isEmpty()) {
+            newPlayer = newPlayers.get(0); //Wenn das null ist weiß ich auch nicht mehr weiter ;)
+            Log.i("Superimportantstuff!!!!!!!!!!Superimportantstuff","Player loaded");
+            if (playerIsLeader) {
+                //hier die Gang nochmal speichern mit Referenz auf Player
+                newPlayer.gang.leader = newPlayer;
+                saveGangWithoutReferences(newPlayer.gang);
+            }
+        }
+        return newPlayer;
+    }
+
+    /** Speichert (hoffentlich) nur die Gang und geht den referenzierten Objekten nicht nach*/
+    public static Gang saveGangWithoutReferences(Gang mGang){
+        PGang gang = PGang.create();
+        if(mGang.id != null){
+            gang.setId(mGang.id);
+        }
+        gang.setName(mGang.name);
+        gang.setColor(mGang.color);
+        gang.setLeaderId(mGang.leader.id);
+        try {
+            gang.save(); //FIXME Ist das Async? Wenn ja, darf ich hier noch kein Get machen.
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+        Log.i("Superimportantstuff!!!!!!!!!!Superimportantstuff","Gang saved");
+        List<Gang> newGang = getGangByName(mGang.name);
+        return newGang.isEmpty() ? null : newGang.get(0);
     }
 
     public static Gang saveGang(Gang mGang){
@@ -53,11 +108,11 @@ public class ParseDao {
     public static Player getPlayerById(String id){
         Player player = null;
         final ArrayList<Player> dirtyHack = new ArrayList<Player>();
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(PPlayer.CLASS_NAME);
-        query.getInBackground(id, new GetCallback<ParseObject>() {
-            public void done(ParseObject object, ParseException e) {
+        ParseQuery<PPlayer> query = ParseQuery.getQuery(PPlayer.class);
+        query.getInBackground(id, new GetCallback<PPlayer>() {
+            public void done(PPlayer object, ParseException e) {
                 if (e == null) {
-                    dirtyHack.add(parseObjectAsPlayer(object));
+                    dirtyHack.add(parseObjectAsPlayer( object));
                 } else {
                     // something went wrong
                 }
@@ -77,19 +132,16 @@ public class ParseDao {
      */
     public static List<Player> getPlayerByName(String name){
         final ArrayList<Player> playerList = new ArrayList<Player>();
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(PPlayer.CLASS_NAME);
+        ParseQuery<PPlayer> query = ParseQuery.getQuery(PPlayer.class);
+        query.include(PGang.CLASS_NAME);
         query.whereEqualTo(PPlayer.COLUMN_NAME,name);
-
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> objectList, ParseException e) {
-                if (e == null) {
-                    for(ParseObject obj : objectList)
-                        playerList.add(parseObjectAsPlayer(obj));
-                } else {
-                    // something went wrong
-                }
-            }
-        });
+        try {
+            List<PPlayer> objectList = query.find();
+            for(PPlayer obj : objectList)
+                playerList.add(parseObjectAsPlayer(obj));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return playerList;
     }
 
@@ -175,14 +227,25 @@ public class ParseDao {
 //        return tags;
     }
 
-    private static Player parseObjectAsPlayer(ParseObject pO){
+    private static Player parseObjectAsPlayer(PPlayer pO){
         Player player = new Player();
-        player.name = pO.getString(PPlayer.COLUMN_NAME);
-        //Gang wird nur als leeres Objekt mit ID geladen.
-        Gang gang = new Gang();
-        gang.id = pO.getString(PPlayer.COLUMN_GANG);
-        if(gang.id!=null)
+        player.id = pO.getId();
+        player.name = pO.getName();
+
+        PGang pgang = pO.getGang();
+        if(pgang!=null && pgang.getId()!=null){
+            Gang gang = new Gang();
+            gang.id=pgang.getId();
+            gang.color=pgang.getColor();
+            gang.name=pgang.getName();
+            if(pgang.getLeader()!=null){
+                Player leader = new Player();
+                leader.id = pgang.getLeader().getId();
+                //TODO Andere Vars füllen
+                gang.leader=leader;
+            }
             player.gang = gang;
+        }
         return player;
     }
 

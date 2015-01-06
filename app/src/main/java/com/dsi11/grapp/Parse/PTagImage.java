@@ -13,11 +13,11 @@ public class PTagImage extends ParseObject {
     public static final String COLUMN_IMAGE = "Image";
 
     public String getId(){
-        return getString(COLUMN_ID);
+        return getObjectId();
     }
 
     public void setId(String id){
-        put(COLUMN_ID,id);
+        setObjectId(id);
     }
 
     public byte[] getImage(){
