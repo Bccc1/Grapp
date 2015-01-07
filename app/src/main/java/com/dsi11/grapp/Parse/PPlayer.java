@@ -4,23 +4,17 @@ import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 
+import org.json.JSONObject;
+
 /**
  * Created by David on 03.01.2015.
  */
 @ParseClassName("Player")
 public class PPlayer extends ParseObject {
     public static final String CLASS_NAME = "Player";
-    public static final String COLUMN_ID = "objectId";
     public static final String COLUMN_NAME = "Name";
     public static final String COLUMN_GANG = "Gang";
-
-    public String getId(){
-        return getObjectId();
-    }
-
-    public void setId(String id){
-        setObjectId(id);
-    }
+    public static final String COLUMN_LEADER = "Leader";
 
     public String getName(){
         return getString(COLUMN_NAME);
@@ -44,6 +38,8 @@ public class PPlayer extends ParseObject {
     }
 
     public void setGang(PGang gang){
+        if(gang==null)
+            put(COLUMN_GANG,JSONObject.NULL); //notwendig?
         put(COLUMN_GANG,gang);
     }
 
@@ -53,6 +49,14 @@ public class PPlayer extends ParseObject {
 
     public void setGangId(String id){
         put(COLUMN_GANG,ParseObject.createWithoutData(PGang.class,id));
+    }
+
+    public void setLeader(boolean leader){
+        put(COLUMN_LEADER,leader);
+    }
+
+    public boolean isLeader(){
+        return getBoolean(COLUMN_LEADER);
     }
 
     public static PPlayer createWithoutData(String id){

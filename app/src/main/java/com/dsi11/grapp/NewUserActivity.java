@@ -16,6 +16,8 @@ import com.dsi11.grapp.Core.Player;
 
 public class NewUserActivity extends ActionBarActivity {
     EditText editTextUsername;
+    static final int NEW_GANG_REQUEST = 1;
+    static final int SELECT_GANG_REQUEST = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +36,9 @@ public class NewUserActivity extends ActionBarActivity {
     }
 
     private Player saveUser(Player player){
-        ParseDao.savePlayer(player);
-        LocalDao.savePlayer(player);
-        //Eigentlich sollte hier das Ergebnis von savePlayer zurückgebeben werden,
-        //allerdings ist das evtl noch kaputt
-        return player;
+        Player newPlayer = ParseDao.addPlayer(player);
+        LocalDao.savePlayer(newPlayer);
+        return newPlayer;
     }
 
     public void onContinueButtonClicked(View view){
@@ -51,7 +51,7 @@ public class NewUserActivity extends ActionBarActivity {
             Player playerNew = saveUser(player);
             if(playerNew!=null){//TODO Fehlerbehandlung
                 showGangDialog();
-                finish(); //Was passiert, wenn der Dialog mit der Back taste abgebrochen wird?
+                //finish();//Was passiert, wenn der Dialog mit der Back taste abgebrochen wird?
             }
         }
     }
@@ -63,7 +63,7 @@ public class NewUserActivity extends ActionBarActivity {
                 .setPositiveButton("Neue Gang", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getApplicationContext(), NewGangActivity.class);
-                        startActivity(intent);
+                        startActivityForResult(intent, NEW_GANG_REQUEST);
                         dialog.cancel();
                     }
                 })
@@ -76,6 +76,16 @@ public class NewUserActivity extends ActionBarActivity {
                 .setIcon(android.R.drawable.ic_dialog_alert);
         AlertDialog alert11 = builder1.create();
         alert11.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == NEW_GANG_REQUEST){
+            if(resultCode == RESULT_OK){
+                finish();
+            }
+        }
     }
 
     @Override
@@ -99,4 +109,6 @@ public class NewUserActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }

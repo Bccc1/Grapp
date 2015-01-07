@@ -9,16 +9,7 @@ import com.parse.ParseObject;
 @ParseClassName("TagImage")
 public class PTagImage extends ParseObject {
     public static final String CLASS_NAME = "TagImage";
-    public static final String COLUMN_ID = "objectId";
     public static final String COLUMN_IMAGE = "Image";
-
-    public String getId(){
-        return getObjectId();
-    }
-
-    public void setId(String id){
-        setObjectId(id);
-    }
 
     public byte[] getImage(){
         return getBytes(COLUMN_IMAGE);
@@ -30,5 +21,9 @@ public class PTagImage extends ParseObject {
 
     public static PTagImage createWithoutData(String id){
         return ParseObject.createWithoutData(PTagImage.class, id);
+    }
+
+    public static PTagImage create(){
+        return ParseObject.create(PTagImage.class);
     }
 }

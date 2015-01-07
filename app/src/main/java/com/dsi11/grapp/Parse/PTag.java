@@ -4,6 +4,8 @@ import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 
+import org.json.JSONObject;
+
 import java.util.Date;
 
 /**
@@ -12,18 +14,9 @@ import java.util.Date;
 @ParseClassName("Tag")
 public class PTag extends ParseObject {
     public static final String CLASS_NAME = "Tag";
-    public static final String COLUMN_ID = "objectId";
     public static final String COLUMN_POSITION = "Position";
     public static final String COLUMN_TIMESTAMP = "Timestamp";
     public static final String COLUMN_GANG = "Gang";
-
-    public String getId(){
-        return getObjectId();
-    }
-
-    public void setId(String id){
-        setObjectId(id);
-    }
 
     public ParseGeoPoint getPosition(){
         return getParseGeoPoint(COLUMN_POSITION);
@@ -42,11 +35,21 @@ public class PTag extends ParseObject {
     }
 
     public String getGangId(){
-        return getString(COLUMN_GANG);
+        return getParseObject(COLUMN_GANG).getObjectId();
     }
 
     public void setGangId(String id){
         put(COLUMN_GANG,PGang.createWithoutData(id));
+    }
+
+    public PGang getGang(){
+        return (PGang) getParseObject(COLUMN_GANG);
+    }
+
+    public void setGang(PGang gang){
+        if(gang==null)
+            put(COLUMN_GANG, JSONObject.NULL); //notwendig?
+        put(COLUMN_GANG,gang);
     }
 
     public static PTag createWithoutData(String id){

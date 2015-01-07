@@ -17,10 +17,10 @@ public class LocalDao {
         Player player = new Player();
         player.name="Player4Life";
         player.id="6jI0lYlUWB";
+        player.leader=true;
         Gang gang = new Gang();
         gang.id="8RWHvwbf8f";
         gang.name="Bloods";
-        gang.leader=player;
         player.gang=gang;
         savePlayer(player);
     }
@@ -28,9 +28,9 @@ public class LocalDao {
     public static void initFakeData2(){
         Player player = new Player();
         player.name="Testplayer";
+        player.leader=true;
         Gang gang = new Gang();
         gang.name="Testgang";
-        gang.leader=player;
         gang.color= Color.MAGENTA;
         player.gang=gang;
         savePlayer(player);
@@ -41,5 +41,9 @@ public class LocalDao {
 
     public static void savePlayer(Player player) {
         LocalDao.player = player;
+    }
+
+    public static void loadPlayerById(String id) {
+        savePlayer(ParseDao.getPlayerById(id));
     }
 }

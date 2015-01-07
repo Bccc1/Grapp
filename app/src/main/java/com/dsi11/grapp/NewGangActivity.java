@@ -20,7 +20,7 @@ import com.dsi11.grapp.Core.TagImage;
 
 public class NewGangActivity extends ActionBarActivity implements ColorPickerDialog.OnColorChangedListener {
 
-    static final int EDIT_TAG_REQUEST = 1;
+    static final int EDIT_TAG_REQUEST = 5;
 
     private Button btnColorPicker;
     private ImageView imageViewTag;
@@ -89,7 +89,7 @@ public class NewGangActivity extends ActionBarActivity implements ColorPickerDia
     }
 
     private void refreshTagView(){
-        Bitmap bm = TagImageHelper.tagAsBitmap(path, gang.color);
+        Bitmap bm = TagImageHelper.tagAsBitmap(path, gang.color,TagImageHelper.RenderSettings.SquareZoomed);
         imageViewTag.setImageBitmap(bm);
     }
 
@@ -99,14 +99,15 @@ public class NewGangActivity extends ActionBarActivity implements ColorPickerDia
         tag.image = path;
         gang.tag=tag;
         gang.name=editTextName.getText().toString();
-        gang.leader=LocalDao.getPlayer();
         //TODO Prüfe ob Gang existiert -> Fehlerbehandlung
 
-        Gang newGang = ParseDao.saveGang(gang);
-        Player player = ParseDao.getPlayerById(LocalDao.getPlayer().id);
-        player.gang = newGang;
-        Player newPlayer = ParseDao.savePlayer(player);
+        Player player = LocalDao.getPlayer();
+        player.gang = gang;
+        player.leader=true;
+        Player newPlayer = ParseDao.updatePlayer(player);
         LocalDao.savePlayer(newPlayer);
+        setResult(RESULT_OK);
+        finish();
     }
 
     private void openColorPicker(){

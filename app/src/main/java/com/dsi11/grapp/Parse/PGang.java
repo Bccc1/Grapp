@@ -11,19 +11,17 @@ import com.parse.ParseObject;
 @ParseClassName("Gang")
 public class PGang extends ParseObject {
     public static final String CLASS_NAME = "Gang";
-    public static final String COLUMN_ID = "objectId";
     public static final String COLUMN_NAME = "Name";
     public static final String COLUMN_TAG = "Tag";
     public static final String COLUMN_COLOR = "Color";
-    public static final String COLUMN_LEADER = "Leader";
 
-    public String getId(){
-        return getObjectId();
-    }
-
-    public void setId(String id){
-        setObjectId(id);
-    }
+    private void myFetcher(){
+        try {
+            fetchIfNeeded();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    };
 
     public String getName(){
         return getString(COLUMN_NAME);
@@ -41,16 +39,16 @@ public class PGang extends ParseObject {
         put(COLUMN_TAG,ParseObject.createWithoutData(PTag.class, id));
     }
 
-    public PTag getTag(){
+    public PTagImage getTag(){
         try {
-            return (PTag) getParseObject(COLUMN_TAG).fetch();
+            return (PTagImage) getParseObject(COLUMN_TAG).fetch();
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public void setTag(PTag tag){
+    public void setTag(PTagImage tag){
         put(COLUMN_TAG,tag);
     }
 
@@ -60,31 +58,6 @@ public class PGang extends ParseObject {
 
     public void setColor(Integer color){
         put(COLUMN_COLOR,color);
-    }
-
-    public String getLeaderId(){
-        return getString(COLUMN_LEADER);
-    }
-
-    public void setLeaderId(String id){
-        put(COLUMN_LEADER,PPlayer.createWithoutData(id));
-    }
-
-    public PPlayer fetchLeader(){
-        try{
-            return (PPlayer) getParseObject(COLUMN_LEADER).fetch();
-        }catch (ParseException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public PPlayer getLeader(){
-    return (PPlayer) getParseObject(COLUMN_LEADER);
-    }
-
-    public void setLeader(PPlayer player){
-        put(COLUMN_LEADER,player);
     }
 
     public static PGang createWithoutData(String id){

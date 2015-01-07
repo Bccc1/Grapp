@@ -49,7 +49,8 @@ public class SerializablePath extends Path implements Serializable {
         actions.clear();
     }
 
-    private void drawThisPath(){
+    /** Transfers the serializable stored Path to the actual Path */
+    public void drawThisPath(){
         for(PathAction p : actions){
             if(p.getType().equals(PathAction.PathActionType.MOVE_TO)){
                 super.moveTo(p.getX(), p.getY());
@@ -66,7 +67,17 @@ public class SerializablePath extends Path implements Serializable {
         public float getY();
     }
 
-    public class ActionMove implements PathAction, Serializable{
+    public static PathAction createPathAction(float x, float y, PathAction.PathActionType type){
+        if(type== PathAction.PathActionType.LINE_TO){
+            return new ActionLine(x,y);
+        }
+        if(type== PathAction.PathActionType.MOVE_TO){
+            return new ActionMove(x,y);
+        }
+        return null;
+    }
+
+    public static class ActionMove implements PathAction, Serializable{
         private static final long serialVersionUID = -7198142191254133295L;
 
         private float x,y;
@@ -93,7 +104,7 @@ public class SerializablePath extends Path implements Serializable {
 
     }
 
-    public class ActionLine implements PathAction, Serializable{
+    public static class ActionLine implements PathAction, Serializable{
         private static final long serialVersionUID = 8307137961494172589L;
 
         private float x,y;

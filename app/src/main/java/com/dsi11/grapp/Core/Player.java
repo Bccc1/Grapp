@@ -9,4 +9,5 @@ public class Player {
     public String id;
     public String name;
     public Gang gang;
+    public Boolean leader;
 }

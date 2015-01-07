@@ -1,8 +1,10 @@
 package com.dsi11.grapp;
 
 import android.content.Intent;
+import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.dsi11.grapp.Core.Gang;
 import com.dsi11.grapp.Core.Player;
@@ -11,22 +13,31 @@ import com.dsi11.grapp.Parse.PGang;
 import com.dsi11.grapp.Parse.PPlayer;
 import com.dsi11.grapp.Parse.PTag;
 import com.dsi11.grapp.Parse.PTagImage;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.Parse;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity {
+public class MapsActivity extends FragmentActivity implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
+    private static final String TAG = "MapsActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,16 +63,31 @@ public class MapsActivity extends FragmentActivity {
         //start the newGang activity
         //startActivity(new Intent(this, NewGangActivity.class));
 
-        //TODO Parse verhalten analysieren, dh create, update delete auf objekte mit referenzbäumen.
+        //LocalDao.initFakeData2();
+        //Player savedPlayer = ParseDao.addPlayer(LocalDao.getPlayer());
 
-        LocalDao.initFakeData2();
-        Player savedPlayer = ParseDao.savePlayer(LocalDao.getPlayer());
+        LocalDao.loadPlayerById("dMr7XXnoou");
 
         if(isUserConfigured()){
             //TODO lade Nutzerdaten (Sinnvoll?)
         }else{
             Intent intent = new Intent(this, NewUserActivity.class);
             startActivity(intent);
+        }
+
+        buildGoogleApiClient();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
         }
     }
 
@@ -115,55 +141,57 @@ public class MapsActivity extends FragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-//        for(Tag t : createDummyTags()){
-//            ParseDao.saveTag(t);
-//        }
         List<Tag> tags;
         tags = ParseDao.getAllTags();
         for(Tag tag : tags){
-            mMap.addMarker(new MarkerOptions().position(new LatLng(tag.latitude, tag.longitude)).title(tag.id));
-            //TODO Bilder verwenden
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(tag.latitude, tag.longitude))
+                    .title(tag.gang.name+" - "+tag.id))
+                    .setIcon(BitmapDescriptorFactory.fromBitmap(TagImageHelper.tagAsBitmapIcon(tag.gang.tag.image,tag.gang.color)));
         }
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
 
 
-    public static List<Tag> createDummyTags(){
-        Gang g1 = new Gang();
-        g1.id="8RWHvwbf8f"; //Bloods
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
 
-        Gang g2 = new Gang();
-        g1.id="3f2rWWjeZP"; //Crips
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            LatLng position = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(position).title("Meine Position"));
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(position)
+                    .zoom(15)
+                    .build();
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+    }
 
-        List<Tag> tags = new ArrayList<Tag>();
+    /*
+    * Called by Google Play services if the connection to GoogleApiClient drops because of an
+    * error.
+    */
+    public void onDisconnected() {
+        Log.i(TAG, "Disconnected");
+    }
 
-        Tag t1 = new Tag();
-        t1.latitude=52.852318;
-        t1.longitude=8.723670;
-        t1.gang=g1;
-        t1.timestamp = Calendar.getInstance().getTime();
-        tags.add(t1);
+    @Override
+    public void onConnectionSuspended(int cause) {
+    // The connection to Google Play services was lost for some reason. We call connect() to
+    // attempt to re-establish the connection.
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
 
-        Tag t2 = new Tag();
-        t2.latitude=53.055261;
-        t2.longitude=8.783041;
-        t2.gang=g1;
-        t2.timestamp = Calendar.getInstance().getTime();
-        tags.add(t2);
-
-        Tag t3 = new Tag();
-        t3.latitude=53.072167;
-        t3.longitude=8.792756;
-        t3.gang=g1;
-        t3.timestamp = Calendar.getInstance().getTime();
-        tags.add(t3);
-
-        Tag t4 = new Tag();
-        t4.latitude=53.077838;
-        t4.longitude=8.809849;
-        t4.gang=g2;
-        t4.timestamp = Calendar.getInstance().getTime();
-        tags.add(t4);
-        return tags;
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
     }
 }

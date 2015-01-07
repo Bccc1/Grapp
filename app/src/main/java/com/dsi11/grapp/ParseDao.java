@@ -1,5 +1,6 @@
 package com.dsi11.grapp;
 
+import android.location.Location;
 import android.util.Log;
 
 import com.dsi11.grapp.Core.Gang;
@@ -14,16 +15,9 @@ import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,95 +26,129 @@ import java.util.List;
  */
 public class ParseDao {
 
-    public static Player savePlayer(Player mPlayer) {
-        /** das Speichern des Leaders ist ein blöder Sonderfall, +
-         * da wenn der Player auf die Gang verweist und diese als Leader wieder auf den selben Player verweist,
-         * eine "circular dependency" vorliegt.
-         * */
-        boolean playerIsLeader = false;
-
+    public static Player addPlayer(Player mPlayer) {
+        //code für den Fall das Gang und Player neu sind
         PPlayer player = PPlayer.create();
         player.setName(mPlayer.name);
         if (mPlayer.gang != null) {
-            if (mPlayer.gang.leader != null) {
-                playerIsLeader = mPlayer.gang.leader.name.equals(mPlayer.name);
-                Log.i("Superimportantstuff!!!!!!!!!!Superimportantstuff","Player is Leader is "+playerIsLeader);
-            }
-            PGang gang = PGang.create();
-            gang.setName(mPlayer.gang.name);
-            gang.setColor(mPlayer.gang.color);
-            if (!playerIsLeader) {
-                gang.setLeaderId(mPlayer.gang.leader.id);
-            }
+            PGang gang = createPGangFromGang(mPlayer.gang);
             player.setGang(gang);
         }
+        player.setLeader(mPlayer.leader == null ? false : mPlayer.leader.booleanValue());
+        savePPlayer(player);
+        Player newPlayer = parseObjectAsPlayer(player);
+        return newPlayer;
+    }
+
+    public static Player updatePlayer(Player mPlayer) {
+        PPlayer player = getPPlayerById(mPlayer.id);
+        player.setName(mPlayer.name);
+        player.setLeader(mPlayer.leader);
+        if (mPlayer.gang != null) {
+            if (mPlayer.gang.id != null) {
+                PGang gang = null;
+                if (mPlayer.gang.id.equals(player.getGangId())) {
+                    //existierende Gang wurde verändert
+                    gang = player.getGang();
+                } else {
+                    //Referenz auf andere existierende Gang
+                    gang = getPGangById(mPlayer.gang.id);
+                }
+                gang.setName(mPlayer.gang.name);
+                gang.setColor(mPlayer.gang.color);
+                gang.setTag(tagImageAsParseObject(mPlayer.gang.tag));
+                player.setGang(gang);
+            } else {
+                //neue Gang
+                player.setGang(addGangRaw(mPlayer.gang));
+            }
+        } else {
+            //Player hat keine Gang. Dieser Zustand ist im Update nicht unterstützt.
+        }
+        savePPlayer(player);
+        return parseObjectAsPlayer(player);
+    }
+
+    private static PGang createPGangFromGang(Gang mGang){
+        PGang gang = PGang.create();
+        gang.setName(mGang.name);
+        gang.setColor(mGang.color);
+        //gang.setTag(mGang.tag);
+        return gang;
+    }
+
+    public static void savePPlayer(PPlayer player){
         try {
             player.save();
         } catch (ParseException e) {
             e.printStackTrace();
-            return null;
+            //return false;
         }
-        Log.i("Superimportantstuff!!!!!!!!!!Superimportantstuff","Player saved");
-        List<Player> newPlayers = getPlayerByName(mPlayer.name);
-        Player newPlayer = null;
-        if (!newPlayers.isEmpty()) {
-            newPlayer = newPlayers.get(0); //Wenn das null ist weiß ich auch nicht mehr weiter ;)
-            Log.i("Superimportantstuff!!!!!!!!!!Superimportantstuff","Player loaded");
-            if (playerIsLeader) {
-                //hier die Gang nochmal speichern mit Referenz auf Player
-                newPlayer.gang.leader = newPlayer;
-                saveGangWithoutReferences(newPlayer.gang);
-            }
+        return;
+    }
+
+    public static void addPGang(PGang gang){
+        try {
+            gang.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            //return false;
         }
-        return newPlayer;
+        return;
     }
 
     /** Speichert (hoffentlich) nur die Gang und geht den referenzierten Objekten nicht nach*/
     public static Gang saveGangWithoutReferences(Gang mGang){
         PGang gang = PGang.create();
         if(mGang.id != null){
-            gang.setId(mGang.id);
+            gang.setObjectId(mGang.id);
         }
         gang.setName(mGang.name);
         gang.setColor(mGang.color);
-        gang.setLeaderId(mGang.leader.id);
         try {
-            gang.save(); //FIXME Ist das Async? Wenn ja, darf ich hier noch kein Get machen.
+            gang.save();
         } catch (ParseException e) {
             e.printStackTrace();
             return null;
         }
-        Log.i("Superimportantstuff!!!!!!!!!!Superimportantstuff","Gang saved");
         List<Gang> newGang = getGangByName(mGang.name);
         return newGang.isEmpty() ? null : newGang.get(0);
     }
 
-    public static Gang saveGang(Gang mGang){
+    public static PGang addGangRaw(Gang mGang){
         PGang gang = new PGang();
         gang.setName(mGang.name);
         gang.setColor(mGang.color);
-        gang.setLeaderId(mGang.leader.id);
-        gang.saveInBackground(); //FIXME Ist das Async? Wenn ja, darf ich hier noch kein Get machen.
-        List<Gang> newGang = getGangByName(mGang.name);
-        return newGang.isEmpty() ? null : newGang.get(0);
+        if(mGang.tag!=null){
+            gang.setTag(tagImageAsParseObject(mGang.tag));
+        }
+        addPGang(gang);
+        return gang;
+    }
+
+    public static Gang addGang(Gang mGang){
+        PGang gang = addGangRaw(mGang);
+        Gang result = parseObjectAsGang(gang);
+        return result;
+    }
+
+    private static PPlayer getPPlayerById(String id){
+        PPlayer player = null;
+        ParseQuery<PPlayer> query = ParseQuery.getQuery(PPlayer.class);
+        try {
+            player = query.get(id);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return player;
     }
 
     public static Player getPlayerById(String id){
         Player player = null;
-        final ArrayList<Player> dirtyHack = new ArrayList<Player>();
-        ParseQuery<PPlayer> query = ParseQuery.getQuery(PPlayer.class);
-        query.getInBackground(id, new GetCallback<PPlayer>() {
-            public void done(PPlayer object, ParseException e) {
-                if (e == null) {
-                    dirtyHack.add(parseObjectAsPlayer( object));
-                } else {
-                    // something went wrong
-                }
-            }
-        });
-        if(!dirtyHack.isEmpty())
-            player = dirtyHack.get(0);
-
+        PPlayer pplayer = getPPlayerById(id);
+        if(pplayer!=null) {
+            player=parseObjectAsPlayer(pplayer);
+        }
         return player;
     }
 
@@ -145,22 +173,23 @@ public class ParseDao {
         return playerList;
     }
 
+    public static PGang getPGangById(String id){
+        PGang gang = null;
+        ParseQuery<PGang> query = ParseQuery.getQuery(PGang.class);
+        try {
+            gang = query.get(id);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return gang;
+    }
+
     public static Gang getGangById(String id){
         Gang gang = null;
-        final ArrayList<Gang> dirtyHack = new ArrayList<Gang>();
-        ParseQuery<PGang> query = ParseQuery.getQuery(PGang.class);
-        query.getInBackground(id, new GetCallback<PGang>() {
-            public void done(PGang object, ParseException e) {
-                if (e == null) {
-                    dirtyHack.add(parseObjectAsGang(object));
-                } else {
-                    // something went wrong
-                }
-            }
-        });
-        if(!dirtyHack.isEmpty())
-            gang = dirtyHack.get(0);
-
+        PGang pgang = getPGangById(id);
+        if(pgang!=null) {
+            gang = parseObjectAsGang(pgang);
+        }
         return gang;
     }
 
@@ -174,17 +203,13 @@ public class ParseDao {
         final ArrayList<Gang> gangList = new ArrayList<Gang>();
         ParseQuery<PGang> query = ParseQuery.getQuery(PGang.class);
         query.whereEqualTo(PGang.COLUMN_NAME,name);
-
-        query.findInBackground(new FindCallback<PGang>() {
-            public void done(List<PGang> objectList, ParseException e) {
-                if (e == null) {
-                    for(PGang obj : objectList)
-                        gangList.add(parseObjectAsGang(obj));
-                } else {
-                    // something went wrong
-                }
-            }
-        });
+        try {
+            List<PGang> list = query.find();
+            for(PGang obj : list)
+                gangList.add(parseObjectAsGang(obj));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return gangList;
     }
 
@@ -200,50 +225,30 @@ public class ParseDao {
     public static List<Tag> getAllTags(){
         final ArrayList<Tag> tagList = new ArrayList<Tag>();
         ParseQuery<PTag> query = ParseQuery.getQuery(PTag.class);
-//        query.findInBackground(new FindCallback<PTag>() {
-//            public void done(List<PTag> objectList, ParseException e) {
-//                if (e == null) {
-//                    for(PTag obj : objectList)
-//                        tagList.add(parseObjectAsTag(obj));
-//                } else {
-//                    // something went wrong
-//                }
-//            }
-//        });
+        query.include(PGang.CLASS_NAME);
+        query.include(PGang.CLASS_NAME+"."+PTagImage.CLASS_NAME);
         try {
             for(PTag tag : query.find()){
-                tagList.add(parseObjectAsTag(tag));
+                tagList.add(parseObjectAsTagWithGangAndImage(tag));
             }
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return tagList;
-//        List<Tag> tags = new ArrayList<Tag>();
-//        Tag t1 = new Tag();
-//        t1.id="lkjs902fs0";
-//        t1.latitude=52.852318;
-//        t1.longitude=8.723670;
-//        tags.add(t1);
-//        return tags;
     }
 
     private static Player parseObjectAsPlayer(PPlayer pO){
         Player player = new Player();
-        player.id = pO.getId();
+        player.id = pO.getObjectId();
         player.name = pO.getName();
-
         PGang pgang = pO.getGang();
-        if(pgang!=null && pgang.getId()!=null){
-            Gang gang = new Gang();
-            gang.id=pgang.getId();
-            gang.color=pgang.getColor();
-            gang.name=pgang.getName();
-            if(pgang.getLeader()!=null){
-                Player leader = new Player();
-                leader.id = pgang.getLeader().getId();
-                //TODO Andere Vars füllen
-                gang.leader=leader;
+        if(pgang!=null && pgang.getObjectId()!=null){//FIXME Bedingung ist doof -.-
+            try {
+                pgang.fetchIfNeeded();
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+            Gang gang = parseObjectAsGang(pgang);
             player.gang = gang;
         }
         return player;
@@ -252,34 +257,35 @@ public class ParseDao {
 
     private static Gang fullyParseObjectAsGang(PGang pO){
         Gang gang = parseObjectAsGang(pO);
-        //lade Player
-        //lade Tag
+        try {
+            pO.getTag().fetchIfNeeded();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        TagImage img = parseObjectAsTagImage(pO.getTag());
+        gang.tag=img;
         return gang;
     }
 
+    /**ohne tag*/
     private static Gang parseObjectAsGang(PGang pO){
         Gang gang = new Gang();
+        gang.id = pO.getObjectId();
         gang.name = pO.getName();
         gang.color = pO.getColor();
 
-        //Leader wird nur als leeres Objekt mit ID geladen.
-        Player player = new Player();
-        player.id = pO.getLeaderId();
-        if(player!=null)
-            gang.leader = player;
-
         //Image wird nur als leeres Objekt mit ID geladen.
-        TagImage img = new TagImage();
-        img.id = pO.getTagId();
-        if(img.id!=null)
-            gang.tag = img;
+        //TagImage img = new TagImage();
+        //img.id = pO.getTagId();
+        //if(img.id!=null)
+        //    gang.tag = img;
 
         return gang;
     }
 
     private static TagImage parseObjectAsTagImage(PTagImage pO){
         TagImage tag = new TagImage();
-        tag.id = pO.getId();
+        tag.id = pO.getObjectId();
         byte[] bImage = pO.getImage();
 
         try {
@@ -295,9 +301,9 @@ public class ParseDao {
     private static PTagImage tagImageAsParseObject(TagImage tI){
         PTagImage pO;
         if(tI.id != null){
-            pO = PTagImage.createWithoutData(tI.id);
+            pO = getPTagImageById(tI.id);
         }else{
-            pO = new PTagImage();
+            pO = PTagImage.create();
         }
         byte[] bImage = null;
         try {
@@ -309,10 +315,21 @@ public class ParseDao {
         return pO;
     }
 
+    private static PTagImage getPTagImageById(String id) {
+        PTagImage tagImage = null;
+        ParseQuery<PTagImage> query = ParseQuery.getQuery(PTagImage.class);
+        try {
+            tagImage = query.get(id);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return tagImage;
+    }
+
 
     private static Tag parseObjectAsTag(PTag pO){
         Tag tag = new Tag();
-        tag.id = pO.getId();
+        tag.id = pO.getObjectId();
         tag.timestamp = pO.getTimestamp();
         tag.latitude = pO.getPosition().getLatitude();
         tag.longitude = pO.getPosition().getLongitude();
@@ -321,6 +338,28 @@ public class ParseDao {
         gang.id = pO.getGangId();
         if(gang.id!=null)
             tag.gang = gang;
+        return tag;
+    }
+
+    private static Tag parseObjectAsTagWithGang(PTag pO){
+        Tag tag = parseObjectAsTag(pO);
+        try {
+            pO.getGang().fetchIfNeeded();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        tag.gang=parseObjectAsGang(pO.getGang());
+        return tag;
+    }
+
+    private static Tag parseObjectAsTagWithGangAndImage(PTag pO){
+        Tag tag = parseObjectAsTag(pO);
+        try {
+            pO.getGang().fetchIfNeeded();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        tag.gang=fullyParseObjectAsGang(pO.getGang());
         return tag;
     }
 }
