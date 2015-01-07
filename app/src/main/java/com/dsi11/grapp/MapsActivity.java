@@ -5,6 +5,8 @@ import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.dsi11.grapp.Core.Gang;
 import com.dsi11.grapp.Core.Player;
@@ -37,6 +39,7 @@ public class MapsActivity extends FragmentActivity implements
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private ImageView imageViewSprayBtn;
     private static final String TAG = "MapsActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,13 @@ public class MapsActivity extends FragmentActivity implements
         Parse.initialize(this, "SrnX83VPWR6P4iTiwvpjm5juIRACjkzWawoYcCii", "UwuqEExvBR3Qb7CKBBtBdY39421OewdU6R5q9YxD");
 
         setContentView(R.layout.activity_maps);
+        imageViewSprayBtn = (ImageView) findViewById(R.id.maps_imageView_sprayBtn);
+        imageViewSprayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spray();
+            }
+        });
         setUpMapIfNeeded();
 
         //ParseObject testObject = new ParseObject("TestObject");
@@ -66,7 +76,7 @@ public class MapsActivity extends FragmentActivity implements
         //LocalDao.initFakeData2();
         //Player savedPlayer = ParseDao.addPlayer(LocalDao.getPlayer());
 
-        LocalDao.loadPlayerById("dMr7XXnoou");
+        LocalDao.loadPlayerById("MiOAHt5gai");
 
         if(isUserConfigured()){
             //TODO lade Nutzerdaten (Sinnvoll?)
@@ -76,6 +86,19 @@ public class MapsActivity extends FragmentActivity implements
         }
 
         buildGoogleApiClient();
+    }
+
+    private void spray() {
+        if(mLastLocation != null) {//TODO Sprayen ist möglich Prüfung
+            Tag tag = new Tag();
+            Player player = LocalDao.getPlayer();
+            tag.gang=player.gang;
+            tag.latitude=mLastLocation.getLatitude();
+            tag.longitude=mLastLocation.getLongitude();
+            tag.timestamp=Calendar.getInstance().getTime();
+            ParseDao.addTag(tag);
+            setUpMap();
+        }
     }
 
     @Override
@@ -141,6 +164,7 @@ public class MapsActivity extends FragmentActivity implements
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
+        mMap.clear();
         List<Tag> tags;
         tags = ParseDao.getAllTags();
         for(Tag tag : tags){
@@ -149,6 +173,7 @@ public class MapsActivity extends FragmentActivity implements
                     .title(tag.gang.name+" - "+tag.id))
                     .setIcon(BitmapDescriptorFactory.fromBitmap(TagImageHelper.tagAsBitmapIcon(tag.gang.tag.image,tag.gang.color)));
         }
+        showUserPos();
     }
 
 
@@ -163,6 +188,10 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public void onConnected(Bundle connectionHint) {
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        showUserPos();
+    }
+
+    private void showUserPos(){
         if (mLastLocation != null) {
             LatLng position = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             mMap.addMarker(new MarkerOptions().position(position).title("Meine Position"));

@@ -362,5 +362,37 @@ public class ParseDao {
         tag.gang=fullyParseObjectAsGang(pO.getGang());
         return tag;
     }
+
+    private static PTag tagAsParseObject(Tag mTag){
+        PTag tag = null;
+        if(mTag!=null) {
+            if (mTag.id != null) {
+                //TODO tag = getTagById(mTag.id);
+            } else {
+                tag = PTag.create();
+            }
+            tag.setPosition(new ParseGeoPoint(mTag.latitude, mTag.longitude));
+            tag.setTimestamp(mTag.timestamp);
+            if(mTag.gang != null && mTag.gang.id != null)
+                tag.setGang(PGang.createWithoutData(mTag.gang.id));
+        }
+        return tag;
+    }
+
+    public static Tag addTag(Tag mTag){
+        PTag tag = tagAsParseObject(mTag);
+        addPTag(tag);
+        Tag newTag = parseObjectAsTag(tag);
+        return newTag;
+    }
+
+    public static PTag addPTag(PTag tag){
+        try {
+            tag.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return tag;
+    }
 }
 

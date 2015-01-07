@@ -55,4 +55,8 @@ public class PTag extends ParseObject {
     public static PTag createWithoutData(String id){
         return ParseObject.createWithoutData(PTag.class, id);
     }
+
+    public static PTag create(){
+        return ParseObject.create(PTag.class);
+    }
 }
