@@ -1,6 +1,7 @@
 package com.dsi11.grapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ public class MapsActivity extends FragmentActivity implements
     private Location mLastLocation;
     private ImageView imageViewSprayBtn;
     private static final String TAG = "MapsActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +78,8 @@ public class MapsActivity extends FragmentActivity implements
         //LocalDao.initFakeData2();
         //Player savedPlayer = ParseDao.addPlayer(LocalDao.getPlayer());
 
-        LocalDao.loadPlayerById("MiOAHt5gai");
+        //LocalDao.loadPlayerById("MiOAHt5gai");
+        LocalDao.init(this);
 
         if(isUserConfigured()){
             //TODO lade Nutzerdaten (Sinnvoll?)
