@@ -152,6 +152,37 @@ public class ParseDao {
         return player;
     }
 
+    public static Player getPlayerByIdWithAllData(String id){
+        Player player = null;
+        PPlayer pplayer = getPPlayerById(id);
+        if(pplayer!=null) {
+            player=parseObjectAsPlayerWithAllData(pplayer);
+        }
+        return player;
+    }
+
+    public static List<Player> getGangMembersByGangId(String gangId){
+        List<PPlayer> pplayers = getPPlayersByGangId(gangId);
+        List<Player> players = new ArrayList<Player>();
+        for(PPlayer player : pplayers){
+            players.add(parseObjectAsPlayer(player));
+        }
+        return players;
+    }
+
+    private static List<PPlayer> getPPlayersByGangId(String gangId){
+        PGang gang = PGang.createWithoutData(gangId);
+        List<PPlayer> players = new ArrayList<PPlayer>();
+        ParseQuery<PPlayer> query = ParseQuery.getQuery(PPlayer.class);
+        query.whereEqualTo(PPlayer.COLUMN_GANG,gang);
+        try {
+            players = query.find();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return players;
+    }
+
     /**
      * Returns a List of Players with this name. Should always be only one item.
      * If none is found, an empty List is returned.
@@ -250,6 +281,21 @@ public class ParseDao {
             }
             Gang gang = parseObjectAsGang(pgang);
             player.gang = gang;
+        }
+        return player;
+    }
+
+    private static Player parseObjectAsPlayerWithAllData(PPlayer pO){
+        Player player = parseObjectAsPlayer(pO);
+        PGang pgang = pO.getGang();
+        if(pgang!=null && pgang.getObjectId()!=null){//FIXME Bedingung ist doof -.-
+            PTagImage tag = pgang.getTag();
+            try {
+                tag.fetchIfNeeded();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            player.gang.tag=parseObjectAsTagImage(tag);
         }
         return player;
     }

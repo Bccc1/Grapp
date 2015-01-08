@@ -22,7 +22,7 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageButton"
+        android:id="@+id/maps_imageButton_showGang"
         android:src="@drawable/btn_gang_ansicht"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true" />
@@ -36,5 +36,13 @@
         android:layout_marginLeft="10dp"
         android:layout_alignStart="@id/maps_imageView_header"
         android:layout_below="@+id/maps_imageView_header" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset App"
+        android:id="@+id/maps_btn_reset"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

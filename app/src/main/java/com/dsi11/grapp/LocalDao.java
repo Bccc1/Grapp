@@ -69,7 +69,16 @@ public class LocalDao {
 
     public static void loadPlayerById(String id) {
         if(id!=null) {
-            savePlayer(ParseDao.getPlayerById(id));
+            savePlayer(ParseDao.getPlayerByIdWithAllData(id));
         }
+    }
+
+    public static void reset() {
+        SharedPreferences settings = activity.getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(PREFS_PLAYER_ID, null);
+
+        // Commit the edits!
+        editor.commit();
     }
 }

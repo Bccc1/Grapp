@@ -11,5 +11,6 @@
     <string name="settings_bg_color_confirm">OK</string>
     <string name="settings_default_color_confirm">Abbrechen</string>
     <string name="settings_bg_color_dialog">Farbwähler</string>
+    <string name="title_activity_show_gang">ShowGangActivity</string>
 
 </resources>

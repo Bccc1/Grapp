@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.dsi11.grapp.Core.Gang;
@@ -41,6 +43,8 @@ public class MapsActivity extends FragmentActivity implements
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private ImageView imageViewSprayBtn;
+    private ImageButton imageButtonShowGang;
+    private Button btnReset;
     private static final String TAG = "MapsActivity";
 
     @Override
@@ -61,6 +65,20 @@ public class MapsActivity extends FragmentActivity implements
             @Override
             public void onClick(View v) {
                 spray();
+            }
+        });
+        imageButtonShowGang = (ImageButton) findViewById(R.id.maps_imageButton_showGang);
+        imageButtonShowGang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showGang();
+            }
+        });
+        btnReset = (Button) findViewById(R.id.maps_btn_reset);
+        btnReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetApp();
             }
         });
         setUpMapIfNeeded();
@@ -91,6 +109,10 @@ public class MapsActivity extends FragmentActivity implements
         buildGoogleApiClient();
     }
 
+    private void resetApp() {
+        LocalDao.reset();
+    }
+
     private void spray() {
         if(mLastLocation != null) {//TODO Sprayen ist möglich Prüfung
             Tag tag = new Tag();
@@ -102,6 +124,11 @@ public class MapsActivity extends FragmentActivity implements
             ParseDao.addTag(tag);
             setUpMap();
         }
+    }
+
+    private void showGang(){
+        Intent intent = new Intent(this,ShowGangActivity.class);
+        startActivity(intent);
     }
 
     @Override
