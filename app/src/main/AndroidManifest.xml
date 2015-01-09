@@ -50,6 +50,10 @@
             android:name=".ShowGangActivity"
             android:label="@string/title_activity_show_gang" >
         </activity>
+        <activity
+            android:name=".GangListActivity"
+            android:label="@string/title_activity_gang_list" >
+        </activity>
     </application>
 
 </manifest>

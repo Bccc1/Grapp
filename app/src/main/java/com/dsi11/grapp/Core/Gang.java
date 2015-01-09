@@ -8,4 +8,9 @@ public class Gang {
     public String name;
     public TagImage tag;
     public Integer color;
+
+    @Override
+    public String toString() {
+        return name != null ? name : (id == null ? super.toString()+" ID:null" : super.toString()+" ID:"+id);
+    }
 }

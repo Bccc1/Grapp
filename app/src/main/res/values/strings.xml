@@ -12,5 +12,6 @@
     <string name="settings_default_color_confirm">Abbrechen</string>
     <string name="settings_bg_color_dialog">Farbwähler</string>
     <string name="title_activity_show_gang">Gang</string>
+    <string name="title_activity_gang_list">Gang Übersicht</string>
 
 </resources>

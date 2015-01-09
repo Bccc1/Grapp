@@ -4,6 +4,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,10 +18,15 @@ import java.util.List;
 
 public class ShowGangActivity extends ActionBarActivity {
 
+    public static final String PARAM_GANG = "gang";
     private ImageView imageViewTag;
     private TextView textViewGangName;
     private TextView textViewMemberList;
-
+    private Button btnJoinGang;
+    private Boolean userIsMember = false;
+    private String gangId = null;
+    private Player player = null;
+    private Gang gang = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,27 +35,57 @@ public class ShowGangActivity extends ActionBarActivity {
         imageViewTag = (ImageView) findViewById(R.id.showGang_imageView_tag);
         textViewGangName = (TextView) findViewById(R.id.showGang_txt_gangName);
         textViewMemberList = (TextView) findViewById(R.id.showGang_txt_memberList);
-        fillView();
+        btnJoinGang = (Button) findViewById(R.id.showGang_btn_joinGang);
+        btnJoinGang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                joinGang();
+            }
+        });
+
+        Bundle b = getIntent().getExtras();
+        if(b!=null){
+            if(b.containsKey(PARAM_GANG)){
+                gangId = b.getString(PARAM_GANG,null);
+            }
+        }
+        fillView(gangId);
     }
 
-    private void fillView(){
-        Player player = LocalDao.getPlayer();
-        Gang gang = player.gang;
-        if(!(gang.tag!=null && gang.tag.id!=null)){
-            LocalDao.loadPlayerById(player.id);
-            player = LocalDao.getPlayer();
+    private void fillView(String gangId){
+        player = LocalDao.getPlayer();
+        userIsMember = (gangId == null || (player.gang!= null && player.gang.id == gangId));
+        if(userIsMember){
+            gang = player.gang;
+            if(!(gang.tag!=null && gang.tag.id!=null)){
+                LocalDao.loadPlayerById(player.id);
+                player = LocalDao.getPlayer();
+                gang = player.gang;
+            }
+            btnJoinGang.setVisibility(View.INVISIBLE);
+        }else{
+            gang = ParseDao.getGangById(gangId);
+            btnJoinGang.setVisibility(View.VISIBLE);
         }
         textViewGangName.setText(gang.name);
         imageViewTag.setImageBitmap(TagImageHelper.tagAsBitmap(gang.tag.image,gang.color,TagImageHelper.RenderSettings.SquareZoomed));
         List<Player> players = ParseDao.getGangMembersByGangId(gang.id);
-        String playerString = "";
+        StringBuilder playerString = new StringBuilder();
         for(Player p : players){
-            playerString += p.name;
-            playerString += "\n";
+            playerString.append(p.name);
+            playerString.append("\n");
         }
-        textViewMemberList.setText(playerString);
+        textViewMemberList.setText(playerString.toString());
     }
 
+    private void joinGang(){
+        player.gang = gang;
+        player.leader=false;
+        Player newPlayer = ParseDao.updatePlayer(player);
+        LocalDao.savePlayer(newPlayer);
+        setResult(RESULT_OK);
+        finish();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

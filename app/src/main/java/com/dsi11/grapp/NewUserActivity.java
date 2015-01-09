@@ -24,8 +24,9 @@ public class NewUserActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
         editTextUsername = (EditText) findViewById(R.id.newUser_editText_username);
-        //TODO Prüfen ob lokal schon unvollständige Userdaten existieren und dann direkt zum Gangdialog
+        //Prüfen ob lokal schon unvollständige Userdaten existieren und dann direkt zum Gangdialog
         if(LocalDao.getPlayer() != null){
+            editTextUsername.setText(LocalDao.getPlayer().name);
             showGangDialog();
         }
     }
@@ -69,7 +70,8 @@ public class NewUserActivity extends ActionBarActivity {
                 })
                 .setNegativeButton("bestehender Gang anschließen", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //TODO Gang Übersicht Activity starten
+                        Intent intent = new Intent(getApplicationContext(), GangListActivity.class);
+                        startActivityForResult(intent, SELECT_GANG_REQUEST);
                         dialog.cancel();
                     }
                 })
@@ -82,6 +84,11 @@ public class NewUserActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == NEW_GANG_REQUEST){
+            if(resultCode == RESULT_OK){
+                finish();
+            }
+        }
+        if(requestCode == SELECT_GANG_REQUEST){
             if(resultCode == RESULT_OK){
                 finish();
             }

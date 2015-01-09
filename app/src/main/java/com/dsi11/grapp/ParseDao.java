@@ -41,6 +41,7 @@ public class ParseDao {
     }
 
     public static Player updatePlayer(Player mPlayer) {
+        //TODO Konzept überdenken, evtl splitten in updatePlayer und updatePlayerWithGang und updatePlayerWithGangAndTagImage
         PPlayer player = getPPlayerById(mPlayer.id);
         player.setName(mPlayer.name);
         player.setLeader(mPlayer.leader);
@@ -50,13 +51,13 @@ public class ParseDao {
                 if (mPlayer.gang.id.equals(player.getGangId())) {
                     //existierende Gang wurde verändert
                     gang = player.getGang();
+                    gang.setName(mPlayer.gang.name);
+                    gang.setColor(mPlayer.gang.color);
+                    gang.setTag(tagImageAsParseObject(mPlayer.gang.tag));
                 } else {
                     //Referenz auf andere existierende Gang
-                    gang = getPGangById(mPlayer.gang.id);
+                    gang = PGang.createWithoutData(mPlayer.gang.id);
                 }
-                gang.setName(mPlayer.gang.name);
-                gang.setColor(mPlayer.gang.color);
-                gang.setTag(tagImageAsParseObject(mPlayer.gang.tag));
                 player.setGang(gang);
             } else {
                 //neue Gang
@@ -219,7 +220,7 @@ public class ParseDao {
         Gang gang = null;
         PGang pgang = getPGangById(id);
         if(pgang!=null) {
-            gang = parseObjectAsGang(pgang);
+            gang = fullyParseObjectAsGang(pgang);
         }
         return gang;
     }
@@ -257,7 +258,7 @@ public class ParseDao {
         final ArrayList<Tag> tagList = new ArrayList<Tag>();
         ParseQuery<PTag> query = ParseQuery.getQuery(PTag.class);
         query.include(PGang.CLASS_NAME);
-        query.include(PGang.CLASS_NAME+"."+PTagImage.CLASS_NAME);
+        query.include(PGang.CLASS_NAME + "." + PTagImage.CLASS_NAME);
         try {
             for(PTag tag : query.find()){
                 tagList.add(parseObjectAsTagWithGangAndImage(tag));
@@ -439,6 +440,26 @@ public class ParseDao {
             e.printStackTrace();
         }
         return tag;
+    }
+
+    public static List<Gang> getAllGangs() {
+        List<Gang> gangs = new ArrayList<Gang>();
+        for(PGang pg : getAllPGangs()){
+            Gang g = parseObjectAsGang(pg);
+            gangs.add(g);
+        }
+        return gangs;
+    }
+
+    public static List<PGang> getAllPGangs(){
+        List<PGang> gangs = null;
+        ParseQuery<PGang> query = new ParseQuery<PGang>(PGang.class);
+        try {
+            gangs = query.find();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return gangs;
     }
 }
 
