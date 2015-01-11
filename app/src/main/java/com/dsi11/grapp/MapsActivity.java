@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.dsi11.grapp.Core.Gang;
+import com.dsi11.grapp.Core.GangRegion;
 import com.dsi11.grapp.Core.Player;
 import com.dsi11.grapp.Core.Tag;
 import com.dsi11.grapp.Parse.PGang;
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -46,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements
     private ImageButton imageButtonShowGang;
     private Button btnReset;
     private static final String TAG = "MapsActivity";
+    private List<GangRegion> regions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,8 +191,7 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * <p/>
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
@@ -197,14 +199,63 @@ public class MapsActivity extends FragmentActivity implements
         mMap.clear();
         List<Tag> tags;
         tags = ParseDao.getAllTags();
+
+        //------------------------------------------------------------------------------------------
+        //                      add Tags to the Map
+        //------------------------------------------------------------------------------------------
         for(Tag tag : tags){
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(tag.latitude, tag.longitude))
-                    .title(tag.gang.name+" - "+tag.id))
+                    .anchor(0.5f,0.5f)//Center the Marker on the Position
+                    .title(tag.gang.name+" - "+tag.timestamp))
                     .setIcon(BitmapDescriptorFactory.fromBitmap(TagImageHelper.tagAsBitmapIcon(tag.gang.tag.image,tag.gang.color)));
         }
+
+        //------------------------------------------------------------------------------------------
+        //                      calculate the Regions
+        //------------------------------------------------------------------------------------------
+        regions = new ArrayList<GangRegion>();
+        for(Tag tag : tags){
+            //berechne Region xy (das ist sozusagen die ID der Region)
+            int x = (int) (tag.longitude / GangRegion.gridLongitude);
+            int y = (int) (tag.latitude / GangRegion.gridLatitude);
+
+            boolean found=false;
+            for(GangRegion gr : regions){
+                if(gr.x == x && gr.y == y){
+                    gr.addTag(tag);
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                GangRegion r = new GangRegion();
+                r.setXY(x, y);
+                r.addTag(tag);
+                regions.add(r);
+            }
+        }
+
+        //------------------------------------------------------------------------------------------
+        //                      add Regions to the Map
+        //------------------------------------------------------------------------------------------
+        for(GangRegion gr : regions){
+            gr.whoIsTheBoss();
+            mMap.addPolygon(new PolygonOptions()
+                    .add(gr.getLeftBottom())
+                    .add(gr.getLeftTop())
+                    .add(gr.getRightTop())
+                    .add(gr.getRightBottom())
+                    .fillColor(gr.getBackgroundColor())
+                    .strokeWidth(3f))
+                    .setStrokeColor(gr.getColor());
+        }
+
+
         showUserPos();
     }
+
+
 
 
     protected synchronized void buildGoogleApiClient() {

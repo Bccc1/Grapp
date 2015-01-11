@@ -1,0 +1,105 @@
+package com.dsi11.grapp.Core;
+
+import android.graphics.Color;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by David on 10.01.2015.
+ */
+public class GangRegion{
+    public static float gridLongitude =  	0.01f; //longitude ^= X-Achse, -180° - 180°
+    public static float gridLatitude =  	0.006f; //latitude ^= Y-Achse, -90° - 90°
+    boolean somethingChanged = true;
+    Map<String,Integer> counts = new HashMap<>();
+    //gebiet sit identifiziert über xy als erster eckpunkt des gebiets.
+    //hierbei gilt eine betrachtung von -180/-90 nach 180/90.
+    public int x, y; // gebietbegin geteilt durch gridLan/gridLat
+    LatLngBounds bounds;
+    ArrayList<Tag> tags = new ArrayList<Tag>();
+
+    String bossId;
+    Integer bossCount = 0;
+    Gang currentlyRuledBy;
+
+    public void setXY(int x, int y){
+        this.x=x;
+        this.y=y;
+        bounds = new LatLngBounds(new LatLng(y*gridLatitude,x*gridLongitude),new LatLng((y+1)*gridLatitude,(x+1)*gridLongitude));
+    }
+
+    public int getBackgroundColor(){
+        int transparentColor = Color.argb(150,
+                Color.red(currentlyRuledBy.color),
+                Color.green(currentlyRuledBy.color),
+                Color.blue(currentlyRuledBy.color));
+        return transparentColor;
+    }
+
+    public int getColor(){
+        return currentlyRuledBy.color;
+    }
+
+    public boolean inRegion(LatLng latLng){
+        return bounds.contains(latLng);
+    }
+
+    public void addTag(Tag tag){
+        tags.add(tag);
+        somethingChanged = true;
+    }
+
+    public LatLng getLeftBottom(){
+        return new LatLng(y*gridLatitude,x*gridLongitude);
+    }
+
+    public LatLng getRightBottom(){
+        return new LatLng(y*gridLatitude,(x+1)*gridLongitude);
+    }
+
+    public LatLng getLeftTop(){
+        return new LatLng((y+1)*gridLatitude,x*gridLongitude);
+    }
+
+    public LatLng getRightTop(){
+        return new LatLng((y+1)*gridLatitude,(x+1)*gridLongitude);
+    }
+
+
+
+    /** simply returns the Gang with the most tags */
+    public Gang whoIsTheBoss(){
+        if(somethingChanged) {
+            counts = new HashMap<>();
+            for (Tag t : tags) {
+                if (counts.containsKey(t.gang.id)) {
+                    counts.put(t.gang.id, counts.get(t.gang.id) + 1);
+                } else {
+                    counts.put(t.gang.id, 1);
+                }
+            }
+            for(Map.Entry<String, Integer> e : counts.entrySet()){
+                if(e.getValue()>bossCount) {
+                    bossId = e.getKey();
+                    bossCount = e.getValue();
+                }
+            }
+
+            for(Tag t : tags){
+                if(t.gang.id.equals(bossId)){
+                    currentlyRuledBy = t.gang;
+                    break;
+                }
+            }
+            somethingChanged = false;
+        }
+
+        return currentlyRuledBy;
+    }
+
+}
