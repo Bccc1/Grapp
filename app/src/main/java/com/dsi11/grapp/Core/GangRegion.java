@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,16 +34,28 @@ public class GangRegion{
         bounds = new LatLngBounds(new LatLng(y*gridLatitude,x*gridLongitude),new LatLng((y+1)*gridLatitude,(x+1)*gridLongitude));
     }
 
-    public int getBackgroundColor(){
-        int transparentColor = Color.argb(150,
-                Color.red(currentlyRuledBy.color),
-                Color.green(currentlyRuledBy.color),
-                Color.blue(currentlyRuledBy.color));
-        return transparentColor;
+    public int getBackgroundColor() {
+        if (currentlyRuledBy != null) {
+            int transparentColor = getTransparentColor(currentlyRuledBy.color, 150);
+            return transparentColor;
+        } else {
+            return getTransparentColor(Color.GRAY,150);
+        }
+    }
+
+    private int getTransparentColor(int color, int transparency){
+        return Color.argb(transparency,
+                Color.red(color),
+                Color.green(color),
+                Color.blue(color));
     }
 
     public int getColor(){
-        return currentlyRuledBy.color;
+        if(currentlyRuledBy!=null){
+            return currentlyRuledBy.color;
+        }else{
+            return Color.GRAY;
+        }
     }
 
     public boolean inRegion(LatLng latLng){
@@ -52,6 +65,10 @@ public class GangRegion{
     public void addTag(Tag tag){
         tags.add(tag);
         somethingChanged = true;
+    }
+
+    public List<Tag> getTags(){
+        return tags;
     }
 
     public LatLng getLeftBottom(){

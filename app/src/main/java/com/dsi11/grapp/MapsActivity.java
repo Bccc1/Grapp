@@ -2,6 +2,8 @@ package com.dsi11.grapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -21,6 +23,8 @@ import com.dsi11.grapp.Parse.PTag;
 import com.dsi11.grapp.Parse.PTagImage;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,17 +33,21 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class MapsActivity extends FragmentActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
@@ -49,6 +57,11 @@ public class MapsActivity extends FragmentActivity implements
     private Button btnReset;
     private static final String TAG = "MapsActivity";
     private List<GangRegion> regions = new ArrayList<>();
+    private List<Tag> tags;
+    private List<Tag> oldTags = new ArrayList<Tag>();
+    private LocationRequest mLocationRequest;
+    private String mLastUpdateTime;
+    private Marker userPos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +130,8 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     private void spray() {
-        if(mLastLocation != null) {//TODO Sprayen ist möglich Prüfung
+        if(mLastLocation != null) {//Sprayen ist möglich Prüfung
+            if(checkSprayable()){
             Tag tag = new Tag();
             Player player = LocalDao.getPlayer();
             tag.gang=player.gang;
@@ -126,7 +140,29 @@ public class MapsActivity extends FragmentActivity implements
             tag.timestamp=Calendar.getInstance().getTime();
             ParseDao.addTag(tag);
             setUpMap();
+            }
         }
+    }
+
+    private boolean checkSprayable(){
+    /** FIXME Dürfen tags untereinander einen Abstand<2xtolerance haben?
+     * Wenn ja, muss noch implementiert werden, dass spray das nähere der beiden tags nimmt */
+        float tolerance = 10f; //10m abweichungen erlaubt.
+        GangRegion region = getRegion(mLastLocation.getLongitude(), mLastLocation.getLatitude());
+        if(region.getTags()==null || region.getTags().size()<3){
+            return true;
+        }else{
+            for(Tag tag : region.getTags()){
+                if(!tag.gang.id.equals(LocalDao.getPlayer().gang.id)){
+                float[] result = new float[1];
+                Location.distanceBetween(mLastLocation.getLatitude(),mLastLocation.getLongitude(),tag.latitude,tag.longitude,result);
+                if(result[0]<tolerance){
+                    return true;
+                }
+                }
+            }
+        }
+        return false;
     }
 
     private void showGang(){
@@ -190,6 +226,26 @@ public class MapsActivity extends FragmentActivity implements
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //stopLocationUpdates();
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        //if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+        //    startLocationUpdates();
+        //}
+
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+    }
+
     /**
      * This is where we can add markers or lines, add listeners or move the camera.
      * <p/>
@@ -197,8 +253,21 @@ public class MapsActivity extends FragmentActivity implements
      */
     private void setUpMap() {
         mMap.clear();
-        List<Tag> tags;
         tags = ParseDao.getAllTags();
+        oldTags.clear();
+        for(Tag t : tags){
+            Double latitude = t.latitude;
+            Double longitude = t.longitude;
+            Date timestamp = t.timestamp;
+            for(Tag t2 : tags){
+                if(t2.latitude==latitude && t2.longitude==longitude && timestamp.before(t2.timestamp)){
+                    oldTags.add(t);
+                    Log.i(TAG,"Tag was added to oldTags"+t.id+" - "+t.gang.name+" - "+t.timestamp);
+                    break;
+                }
+            }
+        }
+        tags.removeAll(oldTags);
 
         //------------------------------------------------------------------------------------------
         //                      add Tags to the Map
@@ -216,24 +285,8 @@ public class MapsActivity extends FragmentActivity implements
         //------------------------------------------------------------------------------------------
         regions = new ArrayList<GangRegion>();
         for(Tag tag : tags){
-            //berechne Region xy (das ist sozusagen die ID der Region)
-            int x = (int) (tag.longitude / GangRegion.gridLongitude);
-            int y = (int) (tag.latitude / GangRegion.gridLatitude);
-
-            boolean found=false;
-            for(GangRegion gr : regions){
-                if(gr.x == x && gr.y == y){
-                    gr.addTag(tag);
-                    found = true;
-                    break;
-                }
-            }
-            if(!found){
-                GangRegion r = new GangRegion();
-                r.setXY(x, y);
-                r.addTag(tag);
-                regions.add(r);
-            }
+            GangRegion region = getRegion(tag.longitude,tag.latitude);
+            region.addTag(tag);
         }
 
         //------------------------------------------------------------------------------------------
@@ -255,6 +308,29 @@ public class MapsActivity extends FragmentActivity implements
         showUserPos();
     }
 
+    /** Searches for the region and if not exists creates a new */
+    private GangRegion getRegion(double longitude, double latitude){
+        //berechne Region xy (das ist sozusagen die ID der Region)
+        int x = (int) (longitude / GangRegion.gridLongitude);
+        int y = (int) (latitude / GangRegion.gridLatitude);
+        GangRegion result = null;
+        boolean found=false;
+        for(GangRegion gr : regions){
+            if(gr.x == x && gr.y == y){
+                result = gr;
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            GangRegion r = new GangRegion();
+            r.setXY(x, y);
+            result = r;
+            regions.add(r);
+        }
+        return result;
+    }
+
 
 
 
@@ -269,13 +345,23 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public void onConnected(Bundle connectionHint) {
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        startLocationUpdates();
         showUserPos();
+    }
+
+    protected void startLocationUpdates() {
+        if(mLocationRequest==null)
+            createLocationRequest();
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
     }
 
     private void showUserPos(){
         if (mLastLocation != null) {
+            if(userPos!=null)
+                userPos.remove();
             LatLng position = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(position).title("Meine Position"));
+            userPos=mMap.addMarker(new MarkerOptions().position(position).title("Meine Position"));
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(position)
                     .zoom(15)
@@ -303,5 +389,28 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        updateUI();
+
+    }
+
+    private void updateUI(){
+        if(checkSprayable()){
+            imageViewSprayBtn.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.ic_spray_possible));
+        }else{
+            imageViewSprayBtn.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.ic_spray_impossible));
+        }
     }
 }

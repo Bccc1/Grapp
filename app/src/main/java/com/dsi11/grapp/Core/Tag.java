@@ -13,7 +13,6 @@ public class Tag {
 
 
     public String id;
-    public Location location;
     public Double latitude;
     public Double longitude;
     public Date timestamp;
