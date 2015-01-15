@@ -145,11 +145,12 @@ public class MapsActivity extends FragmentActivity implements
 
                 Intent tagIntent = new Intent(this,DrawTagActivity.class);
                 tagIntent.putExtra(DrawTagActivity.PARAM_COLOR,player.gang.color);
-                //Der Pfad sollte mitgeliefert werden, um den Hintergrund zu zeichnen
-//                if(path!=null){
-//                    tagIntent.putExtra(DrawTagActivity.PARAM_PATH,path);
-//                }
                 //Es sollte ein Flag gesetzt werden, das es sich ums taggen handelt
+                tagIntent.putExtra(DrawTagActivity.PARAM_SPRAY_MODE,true);
+                //Der Pfad sollte mitgeliefert werden, um den Hintergrund zu zeichnen
+                if(tag.gang.tag.image!=null){
+                    tagIntent.putExtra(DrawTagActivity.PARAM_PATH,tag.gang.tag.image);
+                }
                 startActivityForResult(tagIntent,SPRAY_TAG_REQUEST);
             }
         }

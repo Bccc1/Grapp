@@ -19,11 +19,13 @@ public class DrawTagActivity extends ActionBarActivity {
 
     public static final String PARAM_COLOR = "color";
     public static final String PARAM_PATH = "path";
+    public static final String PARAM_SPRAY_MODE = "sprayMode";
     private Button btnReset;
     private Button btnOk;
     private Button btnUndo;
     private BrushView brushView;
     private Tag tag;
+    private boolean sprayMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +62,17 @@ public class DrawTagActivity extends ActionBarActivity {
             if (color != null) {
                 brushView.setColor(color);
             }
+            if(b.containsKey(PARAM_SPRAY_MODE)){
+                sprayMode = b.getBoolean(PARAM_SPRAY_MODE);
+            }
             if(b.containsKey(PARAM_PATH)){
                 SerializablePath path = (SerializablePath) b.getSerializable(PARAM_PATH);
                 if(path!=null){
-                    brushView.setPath(path);
+                    if(sprayMode) { //Taggen aus der Map
+                        brushView.setBackgroundPath(path);
+                    }else{  //Tag Editor für die Gang
+                        brushView.setPath(path);
+                    }
                 }
             }
         }
