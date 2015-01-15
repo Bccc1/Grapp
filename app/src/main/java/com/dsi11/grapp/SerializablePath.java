@@ -50,15 +50,17 @@ public class SerializablePath extends Path implements Serializable {
     }
 
     public void removeLastLine(){
+        if(actions.size()>0){
         PathAction latestAction = actions.get(actions.size() - 1);
         boolean removedLine = false;
         //latestAction.getType() == PathAction.PathActionType.LINE_TO
-        while (!removedLine) {
+        while (!removedLine && actions.size()>0) {
+            latestAction = actions.get(actions.size() - 1);
             actions.remove(actions.size() - 1);
             if (latestAction.getType() == PathAction.PathActionType.LINE_TO) {
                 removedLine = true;
             }
-            latestAction = actions.get(actions.size() - 1);
+        }
         }
     }
 

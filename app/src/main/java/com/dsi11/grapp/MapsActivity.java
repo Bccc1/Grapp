@@ -50,6 +50,7 @@ import java.util.ResourceBundle;
 public class MapsActivity extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    static final int SPRAY_TAG_REQUEST = 5;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -63,6 +64,7 @@ public class MapsActivity extends FragmentActivity implements
     private LocationRequest mLocationRequest;
     private String mLastUpdateTime;
     private Marker userPos;
+    private Tag mTempTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,19 +135,34 @@ public class MapsActivity extends FragmentActivity implements
     private void spray() {
         if(mLastLocation != null) {//Sprayen ist möglich Prüfung
             if(checkSprayable()){
-            Tag tag = new Tag();
-            Player player = LocalDao.getPlayer();
-            tag.gang=player.gang;
-            tag.latitude=mLastLocation.getLatitude();
-            tag.longitude=mLastLocation.getLongitude();
-            tag.timestamp=Calendar.getInstance().getTime();
-            ParseDao.addTag(tag);   //TODO addTagEventually
-            setUpMap(); //TODO Marker hinzufügen ohne DB Abfrage
-                //Evtl lohnt es sich, manuell die Region zu ermitteln, den Tag hinzuzufügen,
-                // den alten zu löschen und diese Region neu der mMap zuzuweisen.
+                Tag tag = new Tag();
+                Player player = LocalDao.getPlayer();
+                tag.gang=player.gang;
+                tag.latitude=mLastLocation.getLatitude();
+                tag.longitude=mLastLocation.getLongitude();
+                tag.timestamp=Calendar.getInstance().getTime();
+                mTempTag = tag; //ekliger workaround, da ich den Tag nicht an die Activity geben will wg Serializable und so
 
-            Toast.makeText(getApplicationContext(), "Fettes Tag bro", Toast.LENGTH_LONG).show();
+                Intent tagIntent = new Intent(this,DrawTagActivity.class);
+                tagIntent.putExtra(DrawTagActivity.PARAM_COLOR,player.gang.color);
+                //Der Pfad sollte mitgeliefert werden, um den Hintergrund zu zeichnen
+//                if(path!=null){
+//                    tagIntent.putExtra(DrawTagActivity.PARAM_PATH,path);
+//                }
+                //Es sollte ein Flag gesetzt werden, das es sich ums taggen handelt
+                startActivityForResult(tagIntent,SPRAY_TAG_REQUEST);
             }
+        }
+    }
+
+    private void addTag(){
+        if(mTempTag!=null) {
+            ParseDao.addTag(mTempTag);   //TODO addTagEventually
+            setUpMap(); //TODO Marker hinzufügen ohne DB Abfrage
+            //Evtl lohnt es sich, manuell die Region zu ermitteln, den Tag hinzuzufügen,
+            // den alten zu löschen und diese Region neu der mMap zuzuweisen.
+            mTempTag = null;
+            Toast.makeText(getApplicationContext(), "Fettes Tag bro", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -416,6 +433,27 @@ public class MapsActivity extends FragmentActivity implements
             imageViewSprayBtn.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.ic_spray_possible));
         }else{
             imageViewSprayBtn.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.ic_spray_impossible));
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == SPRAY_TAG_REQUEST){
+            if(resultCode == RESULT_OK){
+                addTag();
+
+//                if(data != null && data.hasExtra(DrawTagActivity.PARAM_PATH)) {
+//                    Bundle b = data.getExtras();
+//                    SerializablePath path = (SerializablePath) b.getSerializable(DrawTagActivity.PARAM_PATH);
+//                    if (path != null) {
+//                        this.path = path;
+//                        refreshTagView();
+//                    } else {
+//                        Log.w("NewGangActivity", "EditTag resulted in path being empty");
+//                    }
+//                }
+            }
         }
     }
 }

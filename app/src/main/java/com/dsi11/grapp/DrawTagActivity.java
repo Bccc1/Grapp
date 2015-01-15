@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.dsi11.grapp.Core.Tag;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -21,6 +23,7 @@ public class DrawTagActivity extends ActionBarActivity {
     private Button btnOk;
     private Button btnUndo;
     private BrushView brushView;
+    private Tag tag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -5,15 +5,24 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.HashMap;
+
 /**
  * Created by David on 05.01.15.
  */
 public class BrushView extends View {
+
+    SoundPool soundPool;
+    HashMap<Integer, Integer> soundPoolMap;
+    int soundID = 1;
+    int sprayStreamId;
 
     public void setColor(int color){
         brush.setColor(color);
@@ -53,6 +62,10 @@ public class BrushView extends View {
         brush.setStyle(Paint.Style.STROKE);
         brush.setStrokeJoin(Paint.Join.ROUND);
         brush.setStrokeWidth(10f);
+
+        soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
+        soundPoolMap = new HashMap<Integer, Integer>();
+        soundPoolMap.put(soundID, soundPool.load(getContext(), R.raw.paint_spray_can_spraying_single_line, 1));
     }
 
     public void undo(){
@@ -76,9 +89,13 @@ public class BrushView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 path.moveTo(pointX, pointY);
+                playSpraySound();
                 return true;
             case MotionEvent.ACTION_MOVE:
                 path.lineTo(pointX, pointY);
+                break;
+            case MotionEvent.ACTION_UP:
+                stopSpraySound();
                 break;
             default:
                 return false;
@@ -88,6 +105,24 @@ public class BrushView extends View {
         postInvalidate();
 
         return false;
+    }
+
+    private void playSpraySound(){
+        AudioManager audioManager = (AudioManager)getContext().getSystemService(Context.AUDIO_SERVICE);
+        float curVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        float maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float leftVolume = curVolume/maxVolume;
+        float rightVolume = curVolume/maxVolume;
+        int priority = 1;
+        int no_loop = 0;
+        int loop = -1;
+        float normal_playback_rate = 1f;
+        sprayStreamId = soundPool.play(soundID, leftVolume, rightVolume, priority, loop, normal_playback_rate);
+
+    }
+
+    private void stopSpraySound(){
+        soundPool.stop(sprayStreamId);
     }
 
     public void reset(){
