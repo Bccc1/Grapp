@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.dsi11.grapp.Core.Gang;
 import com.dsi11.grapp.Core.GangRegion;
@@ -138,8 +139,12 @@ public class MapsActivity extends FragmentActivity implements
             tag.latitude=mLastLocation.getLatitude();
             tag.longitude=mLastLocation.getLongitude();
             tag.timestamp=Calendar.getInstance().getTime();
-            ParseDao.addTag(tag);
-            setUpMap();
+            ParseDao.addTag(tag);   //TODO addTagEventually
+            setUpMap(); //TODO Marker hinzufügen ohne DB Abfrage
+                //Evtl lohnt es sich, manuell die Region zu ermitteln, den Tag hinzuzufügen,
+                // den alten zu löschen und diese Region neu der mMap zuzuweisen.
+
+            Toast.makeText(getApplicationContext(), "Fettes Tag bro", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -251,7 +256,7 @@ public class MapsActivity extends FragmentActivity implements
      * <p/>
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
-    private void setUpMap() {
+    private void setUpMap() {//TODO Performance messung der einzelnen Abschnitte
         mMap.clear();
         tags = ParseDao.getAllTags();
         oldTags.clear();

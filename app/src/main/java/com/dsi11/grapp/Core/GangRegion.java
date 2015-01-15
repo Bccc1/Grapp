@@ -14,8 +14,8 @@ import java.util.Map;
  * Created by David on 10.01.2015.
  */
 public class GangRegion{
-    public static float gridLongitude =  	0.01f; //longitude ^= X-Achse, -180° - 180°
-    public static float gridLatitude =  	0.006f; //latitude ^= Y-Achse, -90° - 90°
+    public static float gridLongitude =  	0.0085f; //longitude ^= X-Achse, -180° - 180°
+    public static float gridLatitude =  	0.005f; //latitude ^= Y-Achse, -90° - 90°
     boolean somethingChanged = true;
     Map<String,Integer> counts = new HashMap<>();
     //gebiet sit identifiziert über xy als erster eckpunkt des gebiets.
