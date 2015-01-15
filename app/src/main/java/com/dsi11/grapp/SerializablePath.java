@@ -49,8 +49,22 @@ public class SerializablePath extends Path implements Serializable {
         actions.clear();
     }
 
+    public void removeLastLine(){
+        PathAction latestAction = actions.get(actions.size() - 1);
+        boolean removedLine = false;
+        //latestAction.getType() == PathAction.PathActionType.LINE_TO
+        while (!removedLine) {
+            actions.remove(actions.size() - 1);
+            if (latestAction.getType() == PathAction.PathActionType.LINE_TO) {
+                removedLine = true;
+            }
+            latestAction = actions.get(actions.size() - 1);
+        }
+    }
+
     /** Transfers the serializable stored Path to the actual Path */
     public void drawThisPath(){
+        super.reset();
         for(PathAction p : actions){
             if(p.getType().equals(PathAction.PathActionType.MOVE_TO)){
                 super.moveTo(p.getX(), p.getY());

@@ -55,6 +55,13 @@ public class BrushView extends View {
         brush.setStrokeWidth(10f);
     }
 
+    public void undo(){
+        path.removeLastLine();
+        path.drawThisPath();
+        // Force a view to draw again
+        postInvalidate();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawPath(path, brush);

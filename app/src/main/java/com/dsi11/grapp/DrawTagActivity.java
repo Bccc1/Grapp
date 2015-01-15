@@ -19,6 +19,7 @@ public class DrawTagActivity extends ActionBarActivity {
     public static final String PARAM_PATH = "path";
     private Button btnReset;
     private Button btnOk;
+    private Button btnUndo;
     private BrushView brushView;
 
     @Override
@@ -28,6 +29,7 @@ public class DrawTagActivity extends ActionBarActivity {
         btnReset = (Button) findViewById(R.id.btn_reset);
         btnOk = (Button) findViewById(R.id.btn_ok);
         brushView = (BrushView) findViewById(R.id.brushView);
+        btnUndo = (Button) findViewById(R.id.drawTag_btn_undo);
 
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,6 +43,13 @@ public class DrawTagActivity extends ActionBarActivity {
                 finishWithResult();
             }
         });
+        btnUndo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                brushView.undo();
+            }
+        });
+
 
         Bundle b = getIntent().getExtras();
         if(b!=null){
