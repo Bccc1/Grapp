@@ -45,4 +45,12 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true" />
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/maps_imageView_splashScreen"
+        android:background="#ffc6e1ff"
+        android:src="@drawable/splash_screen"
+        android:scaleType="fitCenter" />
+
 </RelativeLayout>

@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.media.Image;
+import android.os.AsyncTask;
+import android.os.Debug;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,6 +49,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MapsActivity extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -55,6 +59,7 @@ public class MapsActivity extends FragmentActivity implements
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private ImageView imageViewSprayBtn;
+    private ImageView imageViewSplashScreen;
     private ImageButton imageButtonShowGang;
     private Button btnReset;
     private static final String TAG = "MapsActivity";
@@ -65,18 +70,18 @@ public class MapsActivity extends FragmentActivity implements
     private String mLastUpdateTime;
     private Marker userPos;
     private Tag mTempTag;
+    private AtomicBoolean parseInitialized = new AtomicBoolean(false);
+
+    @Override
+    protected void onDestroy() {
+        //Debug.stopMethodTracing();
+        super.onDestroy();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Enable Local Datastore.
-        ParseObject.registerSubclass(PGang.class);
-        ParseObject.registerSubclass(PTag.class);
-        ParseObject.registerSubclass(PPlayer.class);
-        ParseObject.registerSubclass(PTagImage.class);
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "SrnX83VPWR6P4iTiwvpjm5juIRACjkzWawoYcCii", "UwuqEExvBR3Qb7CKBBtBdY39421OewdU6R5q9YxD");
+        //Debug.startMethodTracing("GrappStartup");
 
         setContentView(R.layout.activity_maps);
         imageViewSprayBtn = (ImageView) findViewById(R.id.maps_imageView_sprayBtn);
@@ -86,6 +91,7 @@ public class MapsActivity extends FragmentActivity implements
                 spray();
             }
         });
+        imageViewSplashScreen = (ImageView) findViewById(R.id.maps_imageView_splashScreen);
         imageButtonShowGang = (ImageButton) findViewById(R.id.maps_imageButton_showGang);
         imageButtonShowGang.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,7 +106,11 @@ public class MapsActivity extends FragmentActivity implements
                 resetApp();
             }
         });
-        setUpMapIfNeeded();
+
+
+        //TODO START Async Task here
+        AsyncStartup asyncStartup = new AsyncStartup();
+        asyncStartup.execute();
 
         //ParseObject testObject = new ParseObject("TestObject");
         //testObject.put("foo", "bar");
@@ -116,16 +126,29 @@ public class MapsActivity extends FragmentActivity implements
         //Player savedPlayer = ParseDao.addPlayer(LocalDao.getPlayer());
 
         //LocalDao.loadPlayerById("MiOAHt5gai");
-        LocalDao.init(this);
 
+        showSplashScreen();
+    }
+
+    private void showSplashScreen(){
+        imageViewSplashScreen.setVisibility(View.VISIBLE);
+    }
+    private void hideSplashScreen(){
+        imageViewSplashScreen.setVisibility(View.INVISIBLE);
+    }
+
+    public void afterLoadingFinisished(){
         if(isUserConfigured()){
             //TODO lade Nutzerdaten (Sinnvoll?)
         }else{
             Intent intent = new Intent(this, NewUserActivity.class);
             startActivity(intent);
         }
-
         buildGoogleApiClient();
+        setUpMapIfNeeded();
+        mGoogleApiClient.connect();
+
+        hideSplashScreen();
     }
 
     private void resetApp() {
@@ -196,13 +219,17 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        if(mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
     }
     @Override
     protected void onStop() {
         super.onStop();
+        if(mGoogleApiClient != null){
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
+        }
         }
     }
 
@@ -218,7 +245,9 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        setUpMapIfNeeded();
+        if(parseInitialized.get()){
+            setUpMapIfNeeded();
+        }
     }
 
     /**
@@ -380,6 +409,7 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     private void showUserPos(){
+        if(mMap!=null){
         if (mLastLocation != null) {
             if(userPos!=null)
                 userPos.remove();
@@ -390,6 +420,7 @@ public class MapsActivity extends FragmentActivity implements
                     .zoom(15)
                     .build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
         }
     }
 
@@ -455,6 +486,29 @@ public class MapsActivity extends FragmentActivity implements
 //                    }
 //                }
             }
+        }
+    }
+
+    public class AsyncStartup extends AsyncTask<Void,Void,Boolean>{
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // Enable Local Datastore.
+            ParseObject.registerSubclass(PGang.class);
+            ParseObject.registerSubclass(PTag.class);
+            ParseObject.registerSubclass(PPlayer.class);
+            ParseObject.registerSubclass(PTagImage.class);
+            Parse.enableLocalDatastore(MapsActivity.this);
+            Parse.initialize(MapsActivity.this, "SrnX83VPWR6P4iTiwvpjm5juIRACjkzWawoYcCii", "UwuqEExvBR3Qb7CKBBtBdY39421OewdU6R5q9YxD");
+            parseInitialized.set(true);
+
+            LocalDao.init(MapsActivity.this);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            afterLoadingFinisished();
         }
     }
 }
