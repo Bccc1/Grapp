@@ -1,13 +1,9 @@
 package com.dsi11.grapp;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.media.Image;
 import android.os.AsyncTask;
-import android.os.Debug;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +13,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.dsi11.grapp.Core.Gang;
 import com.dsi11.grapp.Core.GangRegion;
 import com.dsi11.grapp.Core.Player;
 import com.dsi11.grapp.Core.Tag;
@@ -30,7 +25,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -39,6 +33,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -48,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MapsActivity extends FragmentActivity implements
@@ -137,7 +131,7 @@ public class MapsActivity extends FragmentActivity implements
         imageViewSplashScreen.setVisibility(View.INVISIBLE);
     }
 
-    public void afterLoadingFinisished(){
+    public void afterLoadingFinished(){
         if(isUserConfigured()){
             //TODO lade Nutzerdaten (Sinnvoll?)
         }else{
@@ -181,13 +175,29 @@ public class MapsActivity extends FragmentActivity implements
 
     private void addTag(){
         if(mTempTag!=null) {
-            ParseDao.addTag(mTempTag);   //TODO addTagEventually
-            setUpMap(); //TODO Marker hinzufügen ohne DB Abfrage
-            //Evtl lohnt es sich, manuell die Region zu ermitteln, den Tag hinzuzufügen,
-            // den alten zu löschen und diese Region neu der mMap zuzuweisen.
+            ParseDao.addTagEventually(mTempTag);
+            addTempTagMarkerToMap();    //TODO alten Tag marker entfernen
+            recalculateRegions();
+
+            //get the region of the tag, remove from Map and add again
+            //TODO evtl. einfach updaten statt neu machen
+            GangRegion gr = getRegion(mTempTag.longitude,mTempTag.latitude);
+            if(gr.regionPolygon != null) {
+                gr.regionPolygon.remove();
+            }
+            addRegionToMap(gr);
+            //setUpMap();
             mTempTag = null;
             Toast.makeText(getApplicationContext(), "Fettes Tag bro", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void addTempTagMarkerToMap(){
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(mTempTag.latitude, mTempTag.longitude))
+                .anchor(0.5f,0.5f)//Center the Marker on the Position
+                .title(mTempTag.gang.name+" - "+mTempTag.timestamp))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(TagImageHelper.tagAsBitmapIcon(mTempTag.gang.tag.image, mTempTag.gang.color)));
     }
 
     private boolean checkSprayable(){
@@ -307,6 +317,51 @@ public class MapsActivity extends FragmentActivity implements
         mMap.clear();
         tags = ParseDao.getAllTags();
         oldTags.clear();
+        separateNewAndOldTags();
+        addTagsToMap();
+        recalculateRegions();
+        addRegionsToMap();
+        showUserPos();
+    }
+
+    private void addTagsToMap() {
+        for(Tag tag : tags){
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(tag.latitude, tag.longitude))
+                    .anchor(0.5f,0.5f)//Center the Marker on the Position
+                    .title(tag.gang.name+" - "+tag.timestamp))
+                    .setIcon(BitmapDescriptorFactory.fromBitmap(TagImageHelper.tagAsBitmapIcon(tag.gang.tag.image, tag.gang.color)));
+        }
+    }
+
+    private void addRegionsToMap() {
+        for(GangRegion gr : regions){
+            addRegionToMap(gr);
+        }
+    }
+
+    private void addRegionToMap(GangRegion gr) {
+        gr.whoIsTheBoss();
+        Polygon regionPolygon = mMap.addPolygon(new PolygonOptions()
+                .add(gr.getLeftBottom())
+                .add(gr.getLeftTop())
+                .add(gr.getRightTop())
+                .add(gr.getRightBottom())
+                .fillColor(gr.getBackgroundColor())
+                .strokeWidth(3f)
+                .strokeColor(gr.getColor()));
+        gr.regionPolygon = regionPolygon;
+    }
+
+    private void recalculateRegions() {
+        regions = new ArrayList<GangRegion>();
+        for(Tag tag : tags){
+            GangRegion region = getRegion(tag.longitude,tag.latitude);
+            region.addTag(tag);
+        }
+    }
+
+    private void separateNewAndOldTags() {
         for(Tag t : tags){
             Double latitude = t.latitude;
             Double longitude = t.longitude;
@@ -320,44 +375,6 @@ public class MapsActivity extends FragmentActivity implements
             }
         }
         tags.removeAll(oldTags);
-
-        //------------------------------------------------------------------------------------------
-        //                      add Tags to the Map
-        //------------------------------------------------------------------------------------------
-        for(Tag tag : tags){
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(tag.latitude, tag.longitude))
-                    .anchor(0.5f,0.5f)//Center the Marker on the Position
-                    .title(tag.gang.name+" - "+tag.timestamp))
-                    .setIcon(BitmapDescriptorFactory.fromBitmap(TagImageHelper.tagAsBitmapIcon(tag.gang.tag.image,tag.gang.color)));
-        }
-
-        //------------------------------------------------------------------------------------------
-        //                      calculate the Regions
-        //------------------------------------------------------------------------------------------
-        regions = new ArrayList<GangRegion>();
-        for(Tag tag : tags){
-            GangRegion region = getRegion(tag.longitude,tag.latitude);
-            region.addTag(tag);
-        }
-
-        //------------------------------------------------------------------------------------------
-        //                      add Regions to the Map
-        //------------------------------------------------------------------------------------------
-        for(GangRegion gr : regions){
-            gr.whoIsTheBoss();
-            mMap.addPolygon(new PolygonOptions()
-                    .add(gr.getLeftBottom())
-                    .add(gr.getLeftTop())
-                    .add(gr.getRightTop())
-                    .add(gr.getRightBottom())
-                    .fillColor(gr.getBackgroundColor())
-                    .strokeWidth(3f))
-                    .setStrokeColor(gr.getColor());
-        }
-
-
-        showUserPos();
     }
 
     /** Searches for the region and if not exists creates a new */
@@ -508,7 +525,7 @@ public class MapsActivity extends FragmentActivity implements
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
-            afterLoadingFinisished();
+            afterLoadingFinished();
         }
     }
 }

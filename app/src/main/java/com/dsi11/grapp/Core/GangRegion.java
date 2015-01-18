@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Polygon;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,8 @@ public class GangRegion{
     String bossId;
     Integer bossCount = 0;
     Gang currentlyRuledBy;
+
+    public Polygon regionPolygon;
 
     public void setXY(int x, int y){
         this.x=x;
