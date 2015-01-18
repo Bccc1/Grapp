@@ -433,12 +433,23 @@ public class ParseDao {
         return newTag;
     }
 
+    public static void addTagEventually(Tag mTag){
+        PTag tag = tagAsParseObject(mTag);
+        addPTagEventually(tag);
+        return;
+    }
+
     public static PTag addPTag(PTag tag){
         try {
             tag.save();
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        return tag;
+    }
+
+    public static PTag addPTagEventually(PTag tag){
+        tag.saveEventually();
         return tag;
     }
 

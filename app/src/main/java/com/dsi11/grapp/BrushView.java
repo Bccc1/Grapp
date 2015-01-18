@@ -80,7 +80,7 @@ public class BrushView extends View {
 
         soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
         soundPoolMap = new HashMap<Integer, Integer>();
-        soundPoolMap.put(soundID, soundPool.load(getContext(), R.raw.paint_spray_can_spraying_single_line, 1));
+        soundPoolMap.put(soundID, soundPool.load(getContext(), R.raw.paint_spray_loop, 1));
     }
 
     public void undo(){

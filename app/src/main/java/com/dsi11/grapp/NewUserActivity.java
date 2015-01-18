@@ -32,7 +32,7 @@ public class NewUserActivity extends ActionBarActivity {
     }
 
     private boolean usernameExists(String username){
-        //TODO Frage DB ab, ob User schon existiert
+        //TODO Frage DB ab, ob User schon existiert (Async?)
         return false;
     }
 
@@ -45,7 +45,7 @@ public class NewUserActivity extends ActionBarActivity {
     public void onContinueButtonClicked(View view){
         String username = editTextUsername.getText().toString();
         if(usernameExists(username)){
-            Toast.makeText(getApplicationContext(), "Der Name ist schon vergeben.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.new_user_name_already_exists), Toast.LENGTH_LONG).show();
         }else{
             Player player = new Player();
             player.name = username;
@@ -59,16 +59,16 @@ public class NewUserActivity extends ActionBarActivity {
     /** Wahl ob neue Gang oder Gang beitreten */
     private void showGangDialog(){
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this)
-                .setTitle("Die Gang")
-                .setMessage("Willst du eine eigene Gang gründen oder dich einer bestehenden anschließen?")
-                .setPositiveButton("Neue Gang", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.title_dialog_choose_new_or_existing_gang))
+                .setMessage(getString(R.string.dialog_message_choose_new_or_existing_gang))
+                .setPositiveButton(getString(R.string.dialog_positive_choose_new_or_existing_gang), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getApplicationContext(), NewGangActivity.class);
                         startActivityForResult(intent, NEW_GANG_REQUEST);
                         dialog.cancel();
                     }
                 })
-                .setNegativeButton("bestehender Gang anschließen", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.dialog_negative_choose_new_or_existing_gang), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getApplicationContext(), GangListActivity.class);
                         startActivityForResult(intent, SELECT_GANG_REQUEST);
