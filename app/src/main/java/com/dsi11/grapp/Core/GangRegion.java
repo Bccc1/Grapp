@@ -19,9 +19,9 @@ public class GangRegion{
     public static float gridLatitude =  	0.005f; //latitude ^= Y-Achse, -90° - 90°
     boolean somethingChanged = true;
     Map<String,Integer> counts = new HashMap<>();
-    //gebiet sit identifiziert über xy als erster eckpunkt des gebiets.
+    //gebiet ist identifiziert über xy als erster eckpunkt des gebiets.
     //hierbei gilt eine betrachtung von -180/-90 nach 180/90.
-    public int x, y; // gebietbegin geteilt durch gridLan/gridLat
+    public int x, y; // gebietbegin geteilt durch gridLong/gridLat
     LatLngBounds bounds;
     ArrayList<Tag> tags = new ArrayList<Tag>();
 

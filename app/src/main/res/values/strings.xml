@@ -13,5 +13,18 @@
     <string name="settings_bg_color_dialog">Farbwähler</string>
     <string name="title_activity_show_gang">Gang</string>
     <string name="title_activity_gang_list">Gang Übersicht</string>
+    <string name="new_gang_name_empty">Gib einen Namen ein</string>
+    <string name="new_gang_tag_empty">Erstelle einen Tag</string>
+    <string name="new_user_name_already_exists">Der Name ist schon vergeben.</string>
+    <string name="title_dialog_choose_new_or_existing_gang">Die Gang</string>
+    <string name="dialog_message_choose_new_or_existing_gang">Willst du eine eigene Gang gründen oder dich einer bestehenden anschließen?</string>
+    <string name="dialog_positive_choose_new_or_existing_gang">Neue Gang</string>
+    <string name="dialog_negative_choose_new_or_existing_gang">bestehender Gang anschließen</string>
+    <string name="text_draw_tag">Erstelle einen Tag für deine Gang</string>
+    <string name="title_gang_list">Gang Wählen</string>
+    <string name="text_gang_list">Wähle eine der Gangs an, um die Detail ansicht zu öffnen</string>
+    <string name="title_new_user">Nutzer anlegen</string>
+    <string name="text_new_user">Um deine Karriere als Sprayer zu beginnen, wähle deinen Namen</string>
+    <string name="title_show_gang">Gang Menü</string>
 
 </resources>

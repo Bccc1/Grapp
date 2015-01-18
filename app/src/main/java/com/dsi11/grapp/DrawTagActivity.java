@@ -12,7 +12,6 @@ import android.widget.Button;
 import com.dsi11.grapp.Core.Tag;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class DrawTagActivity extends ActionBarActivity {
@@ -32,7 +31,7 @@ public class DrawTagActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw_tag);
         btnReset = (Button) findViewById(R.id.btn_reset);
-        btnOk = (Button) findViewById(R.id.btn_ok);
+        btnOk = (Button) findViewById(R.id.drawTag_btn_ok);
         brushView = (BrushView) findViewById(R.id.brushView);
         btnUndo = (Button) findViewById(R.id.drawTag_btn_undo);
 

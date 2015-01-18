@@ -12,7 +12,6 @@ import com.dsi11.grapp.Core.Player;
  * Created by David on 03.01.2015.
  */
 public class LocalDao {
-    /** TODO Dummy speicher, soll durch SQLite DB ersetzt werden */
     private static Player player = null;
     private static Activity activity;
     private static final String PREFS_NAME = "MyPrefsFile";

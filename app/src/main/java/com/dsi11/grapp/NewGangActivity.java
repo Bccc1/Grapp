@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.dsi11.grapp.Core.Gang;
 import com.dsi11.grapp.Core.Player;
@@ -94,20 +95,31 @@ public class NewGangActivity extends ActionBarActivity implements ColorPickerDia
     }
 
     private void createGang(){
-        //TODO Prüfe ob Felder leer sind
-        TagImage tag = new TagImage();
-        tag.image = path;
-        gang.tag=tag;
-        gang.name=editTextName.getText().toString();
-        //TODO Prüfe ob Gang existiert -> Fehlerbehandlung
+        boolean fieldFilled = true;
+        String gangName = editTextName.getText().toString();
+        fieldFilled &= !gangName.isEmpty();
+        if(!fieldFilled)
+            Toast.makeText(getApplicationContext(),getString(R.string.new_gang_name_empty),Toast.LENGTH_LONG).show();
 
-        Player player = LocalDao.getPlayer();
-        player.gang = gang;
-        player.leader=true;
-        Player newPlayer = ParseDao.updatePlayer(player);
-        LocalDao.savePlayer(newPlayer);
-        setResult(RESULT_OK);
-        finish();
+        fieldFilled &= path!=null && !path.isEmpty();
+        if(!fieldFilled)
+            Toast.makeText(getApplicationContext(),getString(R.string.new_gang_tag_empty),Toast.LENGTH_LONG).show();
+
+        if(fieldFilled) {
+            TagImage tag = new TagImage();
+            tag.image = path;
+            gang.tag = tag;
+            gang.name = gangName;
+            //TODO Prüfe ob Gang existiert -> Fehlerbehandlung
+
+            Player player = LocalDao.getPlayer();
+            player.gang = gang;
+            player.leader = true;
+            Player newPlayer = ParseDao.updatePlayer(player);
+            LocalDao.savePlayer(newPlayer);
+            setResult(RESULT_OK);
+            finish();
+        }
     }
 
     private void openColorPicker(){
