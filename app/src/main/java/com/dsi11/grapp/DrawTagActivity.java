@@ -30,7 +30,7 @@ public class DrawTagActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw_tag);
-        btnReset = (Button) findViewById(R.id.btn_reset);
+        btnReset = (Button) findViewById(R.id.drawTag_btn_reset);
         btnOk = (Button) findViewById(R.id.drawTag_btn_ok);
         brushView = (BrushView) findViewById(R.id.brushView);
         btnUndo = (Button) findViewById(R.id.drawTag_btn_undo);
