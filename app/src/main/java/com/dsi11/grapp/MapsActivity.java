@@ -201,20 +201,33 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     private boolean checkSprayable(){
-    /** FIXME Dürfen tags untereinander einen Abstand<2xtolerance haben?
-     * Wenn ja, muss noch implementiert werden, dass spray das nähere der beiden tags nimmt */
         float tolerance = 10f; //10m abweichungen erlaubt.
         GangRegion region = getRegion(mLastLocation.getLongitude(), mLastLocation.getLatitude());
         if(region.getTags()==null || region.getTags().size()<3){
-            return true;
+            Log.i(TAG + " - checkSprayable", "region tags is null: "+(region.getTags()==null)+ (!(region.getTags()==null) ? (", size is: "+region.getTags().size()) : " "));
+            boolean tooClose = false;
+            for(Tag tag : region.getTags()){
+                Log.i(TAG + " - checkSprayable","checking tag "+tag.id+", "+tag.gang.name);
+                    float[] result = new float[1];
+                    Location.distanceBetween(mLastLocation.getLatitude(),mLastLocation.getLongitude(),tag.latitude,tag.longitude,result);
+                    Log.i(TAG + " - checkSprayable","distance player-tag is "+result[0]);
+                    if(result[0]<(2*tolerance)){
+                        tooClose = true;
+                        Log.i(TAG + " - checkSprayable","player is too close to a tag.");
+                        break;
+                    }
+            }
+            return !tooClose;
         }else{
             for(Tag tag : region.getTags()){
+                Log.i(TAG + " - checkSprayable","checking tag "+tag.id+", "+tag.gang.name);
                 if(!tag.gang.id.equals(LocalDao.getPlayer().gang.id)){
-                float[] result = new float[1];
-                Location.distanceBetween(mLastLocation.getLatitude(),mLastLocation.getLongitude(),tag.latitude,tag.longitude,result);
-                if(result[0]<tolerance){
-                    return true;
-                }
+                    float[] result = new float[1];
+                    Location.distanceBetween(mLastLocation.getLatitude(),mLastLocation.getLongitude(),tag.latitude,tag.longitude,result);
+                    Log.i(TAG + " - checkSprayable","distance player-tag is "+result[0]);
+                    if(result[0]<tolerance){
+                        return true;
+                    }
                 }
             }
         }
