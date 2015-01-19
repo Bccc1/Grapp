@@ -71,6 +71,7 @@ public class ShowGangActivity extends ActionBarActivity {
         imageViewTag.setImageBitmap(TagImageHelper.tagAsBitmap(gang.tag.image,gang.color,TagImageHelper.RenderSettings.SquareZoomed));
         List<Player> players = ParseDao.getGangMembersByGangId(gang.id);
         StringBuilder playerString = new StringBuilder();
+        playerString.append("Deine Grang\n\n");
         for(Player p : players){
             playerString.append(p.name);
             playerString.append("\n");
