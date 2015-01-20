@@ -3,15 +3,18 @@
     android:layout_width="match_parent">
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/maps_imageView_header"
-        android:src="@drawable/main_header" />
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/maps_imageView_splashScreen"
+        android:background="#ffff6a51"
+        android:src="@drawable/splash_screen"
+        android:scaleType="fitCenter" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/maps_imageView_header">
+        android:layout_alignParentTop="true">
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
@@ -19,39 +22,55 @@
             android:name="com.google.android.gms.maps.SupportMapFragment" />
 
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="100dp"
+            android:layout_width="529dp"
+            android:layout_height="172dp"
+            android:id="@+id/imageView3"
+            android:layout_gravity="center_horizontal|bottom"
+            android:src="@drawable/ic_main_bar02" />
+
+        <Button
+            android:layout_width=""
+            android:layout_height="wrap_content"
+            android:text="Reset App"
+            android:id="@+id/maps_btn_reset"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="right|top" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/maps_imageView_gangBtn"
+            android:layout_gravity="left|bottom"
+            android:src="@drawable/btn_gang"
+            android:baselineAlignBottom="false"
+            android:clickable="false" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/maps_imageView_optionBtn"
+            android:layout_gravity="right|bottom"
+            android:src="@drawable/btn_option" />
+
+        <ImageView
+            android:layout_width="71dp"
+            android:layout_height="133dp"
             android:id="@+id/maps_imageView_sprayBtn"
             android:src="@drawable/ic_spray_impossible"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="0dp"
             android:layout_alignStart="@id/maps_imageView_header"
             android:layout_below="@+id/maps_imageView_header"
             android:layout_gravity="center_horizontal|bottom" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="501dp"
+            android:id="@+id/maps_imageView_rahmen"
+            android:layout_gravity="center_horizontal|top"
+            android:src="@drawable/ic_rahmen" />
+
     </FrameLayout>
-
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/maps_imageButton_showGang"
-        android:src="@drawable/btn_gang_ansicht"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reset App"
-        android:id="@+id/maps_btn_reset"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/maps_imageView_splashScreen"
-        android:background="#ffc6e1ff"
-        android:src="@drawable/splash_screen"
-        android:scaleType="fitCenter" />
 
 </RelativeLayout>
