@@ -26,5 +26,7 @@
     <string name="title_new_user">Nutzer anlegen</string>
     <string name="text_new_user">Um deine Karriere als Sprayer zu beginnen, wähle deinen Namen</string>
     <string name="title_show_gang">Gang Menü</string>
+    <string name="title_tutorialentry_list">TutorialEntries</string>
+    <string name="title_tutorialentry_detail">TutorialEntry Detail</string>
 
 </resources>

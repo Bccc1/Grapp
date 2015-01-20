@@ -54,7 +54,7 @@ public class MapsActivity extends FragmentActivity implements
     private Location mLastLocation;
     private ImageView imageViewSprayBtn;
     private ImageView imageViewSplashScreen;
-    private ImageButton imageButtonShowGang;
+    private ImageView imageButtonShowGang;
     private Button btnReset;
     private static final String TAG = "MapsActivity";
     private List<GangRegion> regions = new ArrayList<>();
@@ -86,7 +86,7 @@ public class MapsActivity extends FragmentActivity implements
             }
         });
         imageViewSplashScreen = (ImageView) findViewById(R.id.maps_imageView_splashScreen);
-        imageButtonShowGang = (ImageButton) findViewById(R.id.maps_imageButton_showGang);
+        imageButtonShowGang = (ImageView) findViewById(R.id.maps_imageView_gangBtn);
         imageButtonShowGang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -29,13 +29,14 @@
             android:src="@drawable/ic_main_bar02" />
 
         <Button
-            android:layout_width=""
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reset App"
             android:id="@+id/maps_btn_reset"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_gravity="right|top" />
+            android:layout_gravity="right|top"
+            android:visibility="invisible" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -60,8 +61,6 @@
             android:src="@drawable/ic_spray_impossible"
             android:layout_marginTop="0dp"
             android:layout_marginLeft="0dp"
-            android:layout_alignStart="@id/maps_imageView_header"
-            android:layout_below="@+id/maps_imageView_header"
             android:layout_gravity="center_horizontal|bottom" />
 
         <ImageView

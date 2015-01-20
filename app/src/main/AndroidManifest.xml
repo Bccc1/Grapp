@@ -55,6 +55,22 @@
             android:name=".GangListActivity"
             android:label="@string/title_activity_gang_list" >
         </activity>
+        <activity
+            android:name=".TutorialEntryListActivity"
+            android:label="@string/title_tutorialentry_list"
+            android:parentActivityName=".MapsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.dsi11.grapp.MapsActivity" />
+        </activity>
+        <activity
+            android:name=".TutorialEntryDetailActivity"
+            android:label="@string/title_tutorialentry_detail"
+            android:parentActivityName=".TutorialEntryListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.dsi11.grapp.TutorialEntryListActivity" />
+        </activity>
     </application>
 
 </manifest>
