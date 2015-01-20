@@ -2,15 +2,6 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <ImageView
-        android:visibility="invisible"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/maps_imageView_splashScreen"
-        android:background="#ffff6a51"
-        android:src="@drawable/splash_screen"
-        android:scaleType="fitCenter" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -71,5 +62,14 @@
             android:src="@drawable/ic_rahmen" />
 
     </FrameLayout>
+
+    <ImageView
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/maps_imageView_splashScreen"
+        android:background="#ffff6a51"
+        android:src="@drawable/splash_screen"
+        android:scaleType="fitCenter" />
 
 </RelativeLayout>
