@@ -24,7 +24,7 @@
         <ImageView
             android:layout_width="529dp"
             android:layout_height="172dp"
-            android:id="@+id/imageView3"
+            android:id="@+id/maps_imageView_mainBar"
             android:layout_gravity="center_horizontal|bottom"
             android:src="@drawable/ic_main_bar02" />
 
