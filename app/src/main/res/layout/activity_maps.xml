@@ -13,11 +13,12 @@
             android:name="com.google.android.gms.maps.SupportMapFragment" />
 
         <ImageView
-            android:layout_width="529dp"
-            android:layout_height="172dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/maps_imageView_mainBar"
             android:layout_gravity="center_horizontal|bottom"
-            android:src="@drawable/ic_main_bar02" />
+            android:src="@drawable/ic_main_bar02"
+            android:scaleType="fitEnd" />
 
         <Button
             android:layout_width="wrap_content"
@@ -29,21 +30,35 @@
             android:layout_gravity="right|top"
             android:visibility="invisible" />
 
-        <ImageView
-            android:layout_width="wrap_content"
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <ImageView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/maps_imageView_gangBtn"
             android:layout_gravity="left|bottom"
             android:src="@drawable/btn_gang"
             android:baselineAlignBottom="false"
-            android:clickable="false" />
+            android:clickable="false"
+                android:scaleType="fitStart"
+                android:layout_weight="0.5"    />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/maps_imageView_optionBtn"
-            android:layout_gravity="right|bottom"
-            android:src="@drawable/btn_option" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/maps_imageView_optionBtn"
+                android:layout_gravity="right|bottom"
+                android:src="@drawable/btn_option"
+                android:scaleType="fitEnd"
+                android:layout_weight="0.5"/>
+
+
+        </LinearLayout>
 
         <ImageView
             android:layout_width="71dp"
@@ -54,12 +69,15 @@
             android:layout_marginLeft="0dp"
             android:layout_gravity="center_horizontal|bottom" />
 
+
+
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="501dp"
+            android:layout_height="match_parent"
             android:id="@+id/maps_imageView_rahmen"
             android:layout_gravity="center_horizontal|top"
-            android:src="@drawable/ic_rahmen" />
+            android:src="@drawable/ic_rahmen"
+            android:scaleType="fitXY" />
 
     </FrameLayout>
 

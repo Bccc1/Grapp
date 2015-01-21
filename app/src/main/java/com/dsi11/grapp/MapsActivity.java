@@ -48,7 +48,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MapsActivity extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    boolean debug_dontLoadTags;
+
+    public static final String PARAM_DEBUG_DONT_LOAD_TAGS = "debug_dontLoadTags";
     static final int SPRAY_TAG_REQUEST = 5;
+
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -75,6 +79,12 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle b = getIntent().getExtras();
+        if(b!=null) {
+            debug_dontLoadTags = b.getBoolean(PARAM_DEBUG_DONT_LOAD_TAGS, false);
+            //TODO mach was mit dontLoadTags
+        }
         //Debug.startMethodTracing("GrappStartup");
 
         setContentView(R.layout.activity_maps);
@@ -296,7 +306,8 @@ public class MapsActivity extends FragmentActivity implements
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
-                setUpMap();
+                if(!debug_dontLoadTags)
+                    setUpMap();
             }
         }
     }

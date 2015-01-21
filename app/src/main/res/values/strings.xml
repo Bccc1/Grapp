@@ -28,5 +28,6 @@
     <string name="title_show_gang">Gang Menü</string>
     <string name="title_tutorialentry_list">TutorialEntries</string>
     <string name="title_tutorialentry_detail">TutorialEntry Detail</string>
+    <string name="title_activity_debug">Grapp Developer Tools</string>
 
 </resources>
