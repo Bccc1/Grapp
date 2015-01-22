@@ -1,14 +1,17 @@
 package com.dsi11.grapp;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-import com.dsi11.grapp.dummy.DummyContent;
+import com.dsi11.grapp.dummy.TutorialContent;
 
 /**
  * A fragment representing a single TutorialEntry detail screen.
@@ -26,7 +29,7 @@ public class TutorialEntryDetailFragment extends Fragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private DummyContent.TutorialItem mItem;
+    private TutorialContent.TutorialItem mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -43,7 +46,7 @@ public class TutorialEntryDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.getItemMap().get(getArguments().getString(ARG_ITEM_ID));
+            mItem = TutorialContent.getItemMap().get(getArguments().getString(ARG_ITEM_ID));
         }
     }
 
@@ -54,8 +57,34 @@ public class TutorialEntryDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            TextView textView = (TextView) rootView.findViewById(R.id.tutorialentry_detail);
-            textView.setText(mItem.text);
+
+            LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.tutorialentry_detail_fragment_linearlayout);
+            if (mItem.simple) {
+                TextView textView = new TextView(linearLayout.getContext());
+                textView.setText(mItem.text);
+                linearLayout.addView(textView);
+                ImageView imageView1 = new ImageView(textView.getContext());
+                imageView1.setImageBitmap(mItem.picture);
+//                imageView1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                linearLayout.addView(imageView1);
+            } else {
+                for (TutorialContent.TutorialEntrySection o : mItem.content) {
+                    if (o.getType() == TutorialContent.TutorialEntrySection.TutorialEntrySectionType.TEXT) {
+                        String newText = (String) o.getContent();
+                        TextView textView = new TextView(linearLayout.getContext());
+                        textView.setText(newText);
+                        linearLayout.addView(textView);
+                    } else {
+                        if (o.getType() == TutorialContent.TutorialEntrySection.TutorialEntrySectionType.PICTURE) {
+                            Bitmap picture = (Bitmap) o.getContent();
+                            ImageView imageView = new ImageView(linearLayout.getContext());
+                            imageView.setImageBitmap(picture);
+                            linearLayout.addView(imageView);
+                        }
+                    }
+
+                }
+            }
         }
 
         return rootView;
