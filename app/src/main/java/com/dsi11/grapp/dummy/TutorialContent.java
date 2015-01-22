@@ -90,7 +90,7 @@ public class TutorialContent {
             for(int i = 1; i<=maxNumber; i++){
                 String counter = String.format("%03d", i);
                 int textIdentifier = activity.getResources().getIdentifier("tutorial_" + number + "_text_"+counter, "string", activity.getPackageName());
-                int bitmapIdentifier = activity.getResources().getIdentifier("tutorial_" + number+"_"+counter, "drawable", activity.getPackageName());
+                int bitmapIdentifier = activity.getResources().getIdentifier("tutorial_" + number+"_picture_"+counter, "drawable", activity.getPackageName());
                 if(textIdentifier!=0){
                     text = activity.getString(textIdentifier);
                     if(text !=null)
