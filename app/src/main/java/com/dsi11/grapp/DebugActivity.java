@@ -15,6 +15,7 @@ public class DebugActivity extends ActionBarActivity {
     private Button btnReset;
     private Button btnStart;
     private Button btnStartWOTagLoading;
+    private Button btnStartHelp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,13 @@ public class DebugActivity extends ActionBarActivity {
                 startGrappWithoutLoadingTags();
             }
         });
+        btnStartHelp = (Button) findViewById(R.id.debug_btn_help);
+        btnStartHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startHelpSection();
+            }
+        });
     }
 
     private void startGrapp() {
@@ -52,6 +60,13 @@ public class DebugActivity extends ActionBarActivity {
     private void startGrappWithoutLoadingTags() {
         Intent intent = new Intent(this, MapsActivity.class);
         intent.putExtra(MapsActivity.PARAM_DEBUG_DONT_LOAD_TAGS,true);
+        startActivity(intent);
+        finish();
+    }
+
+    private void startHelpSection(){
+        LocalDao.activity = this;
+        Intent intent = new Intent(this, TutorialEntryListActivity.class);
         startActivity(intent);
         finish();
     }

@@ -13,7 +13,7 @@ import com.dsi11.grapp.Core.Player;
  */
 public class LocalDao {
     private static Player player = null;
-    private static Activity activity;
+    public static Activity activity;
     private static final String PREFS_NAME = "MyPrefsFile";
     private static final String PREFS_PLAYER_ID = "PlayerId";
 

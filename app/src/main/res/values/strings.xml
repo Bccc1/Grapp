@@ -29,5 +29,9 @@
     <string name="title_tutorialentry_list">TutorialEntries</string>
     <string name="title_tutorialentry_detail">TutorialEntry Detail</string>
     <string name="title_activity_debug">Grapp Developer Tools</string>
+    <string name="tutorial_001_title">Erste Lektion</string>
+    <string name="tutorial_001_text">Der Text der ersten Lektion</string>
+    <string name="tutorial_002_title">Zweite Lektion</string>
+    <string name="tutorial_002_text">Der Text der zweiten Lektion</string>
 
 </resources>
