@@ -59,6 +59,7 @@ public class MapsActivity extends FragmentActivity implements
     private ImageView imageViewSprayBtn;
     private ImageView imageViewSplashScreen;
     private ImageView imageButtonShowGang;
+    private ImageView imageButtonShowInfo;
     private Button btnReset;
     private static final String TAG = "MapsActivity";
     private List<GangRegion> regions = new ArrayList<>();
@@ -83,7 +84,6 @@ public class MapsActivity extends FragmentActivity implements
         Bundle b = getIntent().getExtras();
         if(b!=null) {
             debug_dontLoadTags = b.getBoolean(PARAM_DEBUG_DONT_LOAD_TAGS, false);
-            //TODO mach was mit dontLoadTags
         }
         //Debug.startMethodTracing("GrappStartup");
 
@@ -101,6 +101,13 @@ public class MapsActivity extends FragmentActivity implements
             @Override
             public void onClick(View v) {
                 showGang();
+            }
+        });
+        imageButtonShowInfo = (ImageView) findViewById(R.id.maps_imageView_infoBtn);
+        imageButtonShowInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SoundUtils.playButtonClick();
             }
         });
         btnReset = (Button) findViewById(R.id.maps_btn_reset);
@@ -151,6 +158,8 @@ public class MapsActivity extends FragmentActivity implements
         buildGoogleApiClient();
         setUpMapIfNeeded();
         mGoogleApiClient.connect();
+
+        SoundUtils.init(this);
 
         hideSplashScreen();
     }

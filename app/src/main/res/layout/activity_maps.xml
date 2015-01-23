@@ -38,24 +38,27 @@
             android:layout_height="fill_parent">
 
             <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/maps_imageView_gangBtn"
-            android:layout_gravity="left|bottom"
-            android:src="@drawable/btn_gang"
-            android:baselineAlignBottom="false"
-            android:clickable="false"
-                android:scaleType="fitStart"
-                android:layout_weight="0.5"    />
-
-            <ImageView
+                android:id="@+id/maps_imageView_gangBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/maps_imageView_optionBtn"
+                android:layout_gravity="left|bottom"
+                android:layout_weight="0.5"
+                android:baselineAlignBottom="false"
+                android:clickable="false"
+                android:paddingRight="20dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/btn_gang" />
+
+            <ImageView
+                android:id="@+id/maps_imageView_infoBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="right|bottom"
+                android:layout_weight="0.5"
+                android:paddingLeft="20dp"
+                android:scaleType="fitXY"
                 android:src="@drawable/btn_option"
-                android:scaleType="fitEnd"
-                android:layout_weight="0.5"/>
+                android:soundEffectsEnabled="false" />
 
 
         </LinearLayout>
