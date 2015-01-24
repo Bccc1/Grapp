@@ -254,7 +254,7 @@ public class ParseDao {
         tag.saveInBackground();
     }
 
-    public static List<Tag> getAllTags(){
+    public static List<Tag> getAllTagsFullyLoaded(){
         final ArrayList<Tag> tagList = new ArrayList<Tag>();
         ParseQuery<PTag> query = ParseQuery.getQuery(PTag.class);
         query.include(PGang.CLASS_NAME);
@@ -262,6 +262,19 @@ public class ParseDao {
         try {
             for(PTag tag : query.find()){
                 tagList.add(parseObjectAsTagWithGangAndImage(tag));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return tagList;
+    }
+
+    public static List<Tag> getAllTags(){
+        final ArrayList<Tag> tagList = new ArrayList<Tag>();
+        ParseQuery<PTag> query = ParseQuery.getQuery(PTag.class);
+        try {
+            for(PTag tag : query.find()){
+                tagList.add(parseObjectAsTag(tag));
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -465,6 +478,27 @@ public class ParseDao {
     public static List<PGang> getAllPGangs(){
         List<PGang> gangs = null;
         ParseQuery<PGang> query = new ParseQuery<PGang>(PGang.class);
+        try {
+            gangs = query.find();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return gangs;
+    }
+
+    public static List<Gang> getAllGangsWithTagImages() {
+        List<Gang> gangs = new ArrayList<Gang>();
+        for(PGang pg : getAllPGangsWithTagImages()){
+            Gang g = fullyParseObjectAsGang(pg);
+            gangs.add(g);
+        }
+        return gangs;
+    }
+
+    public static List<PGang> getAllPGangsWithTagImages(){
+        List<PGang> gangs = null;
+        ParseQuery<PGang> query = new ParseQuery<PGang>(PGang.class);
+        query.include(PTagImage.CLASS_NAME);
         try {
             gangs = query.find();
         } catch (ParseException e) {

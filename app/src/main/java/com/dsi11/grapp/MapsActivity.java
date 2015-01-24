@@ -2,14 +2,15 @@ package com.dsi11.grapp;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -51,6 +52,9 @@ public class MapsActivity extends FragmentActivity implements
     boolean debug_dontLoadTags;
 
     public static final String PARAM_DEBUG_DONT_LOAD_TAGS = "debug_dontLoadTags";
+
+    public static final String PARAM_PARSE_INITIALIZED =  "parseInitialized";
+
     static final int SPRAY_TAG_REQUEST = 5;
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -78,65 +82,32 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(PARAM_PARSE_INITIALIZED, parseInitialized.get());
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Bundle b = getIntent().getExtras();
         if(b!=null) {
             debug_dontLoadTags = b.getBoolean(PARAM_DEBUG_DONT_LOAD_TAGS, false);
         }
-        //Debug.startMethodTracing("GrappStartup");
+
+        if(savedInstanceState != null){
+            parseInitialized.set(savedInstanceState.getBoolean(PARAM_PARSE_INITIALIZED));
+        }
 
         setContentView(R.layout.activity_maps);
         imageViewSprayBtn = (ImageView) findViewById(R.id.maps_imageView_sprayBtn);
-        imageViewSprayBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                spray();
-            }
-        });
         imageViewSplashScreen = (ImageView) findViewById(R.id.maps_imageView_splashScreen);
         imageButtonShowGang = (ImageView) findViewById(R.id.maps_imageView_gangBtn);
-        imageButtonShowGang.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showGang();
-            }
-        });
         imageButtonShowInfo = (ImageView) findViewById(R.id.maps_imageView_infoBtn);
-        imageButtonShowInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SoundUtils.playButtonClick();
-            }
-        });
         btnReset = (Button) findViewById(R.id.maps_btn_reset);
-        btnReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetApp();
-            }
-        });
 
-
-        //TODO START Async Task here
         AsyncStartup asyncStartup = new AsyncStartup();
         asyncStartup.execute();
-
-        //ParseObject testObject = new ParseObject("TestObject");
-        //testObject.put("foo", "bar");
-        //testObject.saveInBackground();
-
-        //start the draw activity
-        //startActivity(new Intent(this, DrawTagActivity.class));
-
-        //start the newGang activity
-        //startActivity(new Intent(this, NewGangActivity.class));
-
-        //LocalDao.initFakeData2();
-        //Player savedPlayer = ParseDao.addPlayer(LocalDao.getPlayer());
-
-        //LocalDao.loadPlayerById("MiOAHt5gai");
 
         showSplashScreen();
     }
@@ -155,6 +126,9 @@ public class MapsActivity extends FragmentActivity implements
             Intent intent = new Intent(this, NewUserActivity.class);
             startActivity(intent);
         }
+
+        attachGuiListeners();
+
         buildGoogleApiClient();
         setUpMapIfNeeded();
         mGoogleApiClient.connect();
@@ -162,6 +136,87 @@ public class MapsActivity extends FragmentActivity implements
         SoundUtils.init(this);
 
         hideSplashScreen();
+    }
+
+    private void attachGuiListeners(){
+        imageButtonShowGang.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        ImageView view = (ImageView) v;
+                        view.setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {   //OnClick
+                        v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                        showGang();
+                    }
+                    case MotionEvent.ACTION_CANCEL: {
+                        ImageView view = (ImageView) v;
+                        view.clearColorFilter();
+                        view.invalidate();
+                        break;
+                    }
+                }
+                return true;
+            }
+        });
+        btnReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetApp();
+            }
+        });
+        imageViewSprayBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        ImageView view = (ImageView) v;
+                        view.setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {   //OnClick
+                        v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                        spray();
+                    }
+                    case MotionEvent.ACTION_CANCEL: {
+                        ImageView view = (ImageView) v;
+                        view.clearColorFilter();
+                        view.invalidate();
+                        break;
+                    }
+                }
+                return true;
+            }
+        });
+
+        imageButtonShowInfo.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        ImageView view = (ImageView) v;
+                        view.setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {   //OnClick
+                        v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                    }
+                    case MotionEvent.ACTION_CANCEL: {
+                        ImageView view = (ImageView) v;
+                        view.clearColorFilter();
+                        view.invalidate();
+                        break;
+                    }
+                }
+                return true;
+            }
+        });
     }
 
     private void resetApp() {
@@ -348,9 +403,11 @@ public class MapsActivity extends FragmentActivity implements
      */
     private void setUpMap() {//TODO Performance messung der einzelnen Abschnitte
         mMap.clear();
+//        tags = ParseDao.getAllTagsFullyLoaded();
         tags = ParseDao.getAllTags();
         oldTags.clear();
         separateNewAndOldTags();
+        fillTagsWithGang(tags);
         addTagsToMap();
         recalculateRegions();
         addRegionsToMap();
@@ -363,7 +420,13 @@ public class MapsActivity extends FragmentActivity implements
                     .position(new LatLng(tag.latitude, tag.longitude))
                     .anchor(0.5f,0.5f)//Center the Marker on the Position
                     .title(tag.gang.name+" - "+tag.timestamp))
-                    .setIcon(BitmapDescriptorFactory.fromBitmap(TagImageHelper.tagAsBitmapIcon(tag.gang.tag.image, tag.gang.color)));
+                    .setIcon(BitmapDescriptorFactory.fromBitmap(CachedParseData.getTagImageIconByGang(tag.gang.id)));
+        }
+    }
+
+    private void fillTagsWithGang(List<Tag> tags){
+        for(Tag tag : tags){
+            tag.gang = CachedParseData.getGang(tag.gang.id); //TODO prüfen ob taggangid nicht null ist
         }
     }
 
@@ -542,15 +605,16 @@ public class MapsActivity extends FragmentActivity implements
     public class AsyncStartup extends AsyncTask<Void,Void,Boolean>{
         @Override
         protected Boolean doInBackground(Void... params) {
-            // Enable Local Datastore.
-            ParseObject.registerSubclass(PGang.class);
-            ParseObject.registerSubclass(PTag.class);
-            ParseObject.registerSubclass(PPlayer.class);
-            ParseObject.registerSubclass(PTagImage.class);
-            Parse.enableLocalDatastore(MapsActivity.this);
-            Parse.initialize(MapsActivity.this, "SrnX83VPWR6P4iTiwvpjm5juIRACjkzWawoYcCii", "UwuqEExvBR3Qb7CKBBtBdY39421OewdU6R5q9YxD");
-            parseInitialized.set(true);
-
+            if(!parseInitialized.get()) {
+                // Enable Local Datastore.
+                ParseObject.registerSubclass(PGang.class);
+                ParseObject.registerSubclass(PTag.class);
+                ParseObject.registerSubclass(PPlayer.class);
+                ParseObject.registerSubclass(PTagImage.class);
+                Parse.enableLocalDatastore(MapsActivity.this);
+                Parse.initialize(MapsActivity.this, "SrnX83VPWR6P4iTiwvpjm5juIRACjkzWawoYcCii", "UwuqEExvBR3Qb7CKBBtBdY39421OewdU6R5q9YxD");
+                parseInitialized.set(true);
+            }
             LocalDao.init(MapsActivity.this);
             return true;
         }
