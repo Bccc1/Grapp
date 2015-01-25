@@ -10,4 +10,9 @@ public class Player {
     public String name;
     public Gang gang;
     public Boolean leader;
+
+    @Override
+    public String toString() {
+        return name != null ? name : (id == null ? super.toString()+" ID:null" : super.toString()+" ID:"+id);
+    }
 }

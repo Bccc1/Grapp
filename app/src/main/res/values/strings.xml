@@ -41,4 +41,8 @@ Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lo
 Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</string>
     <string name="tutorial_003_text_002">Der nächste Absatz</string>
     <string name="tutorial_003_text_003">Der nächste Absatz</string>
+    <string name="title_activity_player_list">PlayerListActivity</string>
+    <string name="text_player_list">Wähle einen Spieler um ihn zu setzten.</string>
+    <string name="title_player_list">Spieler Wählen</string>
+
 </resources>

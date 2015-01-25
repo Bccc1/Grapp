@@ -89,6 +89,23 @@
                 android:text="Help"
                 android:id="@+id/debug_btn_help" />
         </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView android:text="Change player to existing one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".60"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set Player"
+                android:id="@+id/debug_btn_setPlayer" />
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

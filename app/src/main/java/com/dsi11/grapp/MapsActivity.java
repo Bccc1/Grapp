@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -73,7 +74,7 @@ public class MapsActivity extends FragmentActivity implements
     private String mLastUpdateTime;
     private Marker userPos;
     private Tag mTempTag;
-    private AtomicBoolean parseInitialized = new AtomicBoolean(false);
+
 
     @Override
     protected void onDestroy() {
@@ -84,7 +85,7 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(PARAM_PARSE_INITIALIZED, parseInitialized.get());
+        outState.putBoolean(PARAM_PARSE_INITIALIZED, LocalDao.parseInitialized.get());
     }
 
     @Override
@@ -96,7 +97,7 @@ public class MapsActivity extends FragmentActivity implements
         }
 
         if(savedInstanceState != null){
-            parseInitialized.set(savedInstanceState.getBoolean(PARAM_PARSE_INITIALIZED));
+            LocalDao.parseInitialized.set(savedInstanceState.getBoolean(PARAM_PARSE_INITIALIZED));
         }
 
         setContentView(R.layout.activity_maps);
@@ -134,7 +135,7 @@ public class MapsActivity extends FragmentActivity implements
         mGoogleApiClient.connect();
 
         SoundUtils.init(this);
-
+        resizeGUI();
         hideSplashScreen();
     }
 
@@ -163,6 +164,7 @@ public class MapsActivity extends FragmentActivity implements
                 return true;
             }
         });
+
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -217,6 +219,34 @@ public class MapsActivity extends FragmentActivity implements
                 return true;
             }
         });
+    }
+
+    private void resizeGUI(){
+        Display display = getWindowManager().getDefaultDisplay();
+        int width = display.getWidth();
+        int height = display.getHeight();
+
+        //AspectRatio of SprayButton x:y
+        float sprayBtnAR = 0.5278048780487805f;//TODO calculate
+        int sprayBtnWidth = (int) (width * 0.25f);   //25 % des Bildschirms
+        int sprayBtnHeight = (int) (sprayBtnWidth/sprayBtnAR);
+
+        //AspectRatio of Buttons x:y
+        float btnAR = 2.943396226415094f; //TODO calculate
+        int btnWidth = (int) (width * 0.4f);    //40% des Bildschirms
+        int btnHeight = (int)(btnWidth/btnAR);
+
+        imageViewSprayBtn.requestLayout();
+        imageViewSprayBtn.getLayoutParams().width = sprayBtnWidth;
+        imageViewSprayBtn.getLayoutParams().height = sprayBtnHeight;
+
+        imageButtonShowGang.requestLayout();
+        imageButtonShowGang.getLayoutParams().width = btnWidth;
+        imageButtonShowGang.getLayoutParams().height = btnHeight;
+
+        imageButtonShowInfo.requestLayout();
+        imageButtonShowInfo.getLayoutParams().width = btnWidth;
+        imageButtonShowInfo.getLayoutParams().height = btnHeight;
     }
 
     private void resetApp() {
@@ -342,7 +372,7 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        if(parseInitialized.get()){
+        if(LocalDao.parseInitialized.get()){
             setUpMapIfNeeded();
         }
     }
@@ -605,7 +635,7 @@ public class MapsActivity extends FragmentActivity implements
     public class AsyncStartup extends AsyncTask<Void,Void,Boolean>{
         @Override
         protected Boolean doInBackground(Void... params) {
-            if(!parseInitialized.get()) {
+            if(!LocalDao.parseInitialized.get()) {
                 // Enable Local Datastore.
                 ParseObject.registerSubclass(PGang.class);
                 ParseObject.registerSubclass(PTag.class);
@@ -613,7 +643,7 @@ public class MapsActivity extends FragmentActivity implements
                 ParseObject.registerSubclass(PTagImage.class);
                 Parse.enableLocalDatastore(MapsActivity.this);
                 Parse.initialize(MapsActivity.this, "SrnX83VPWR6P4iTiwvpjm5juIRACjkzWawoYcCii", "UwuqEExvBR3Qb7CKBBtBdY39421OewdU6R5q9YxD");
-                parseInitialized.set(true);
+                LocalDao.parseInitialized.set(true);
             }
             LocalDao.init(MapsActivity.this);
             return true;

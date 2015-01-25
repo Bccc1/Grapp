@@ -8,6 +8,8 @@ import android.util.Log;
 import com.dsi11.grapp.Core.Gang;
 import com.dsi11.grapp.Core.Player;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Created by David on 03.01.2015.
  */
@@ -16,6 +18,7 @@ public class LocalDao {
     public static Activity activity;
     private static final String PREFS_NAME = "MyPrefsFile";
     private static final String PREFS_PLAYER_ID = "PlayerId";
+    public static AtomicBoolean parseInitialized = new AtomicBoolean(false);
 
     public static void init(Activity activity){
         LocalDao.activity = activity;

@@ -9,6 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.dsi11.grapp.Parse.PGang;
+import com.dsi11.grapp.Parse.PPlayer;
+import com.dsi11.grapp.Parse.PTag;
+import com.dsi11.grapp.Parse.PTagImage;
+import com.parse.Parse;
+import com.parse.ParseObject;
+
 
 public class DebugActivity extends ActionBarActivity {
 
@@ -16,6 +23,7 @@ public class DebugActivity extends ActionBarActivity {
     private Button btnStart;
     private Button btnStartWOTagLoading;
     private Button btnStartHelp;
+    private Button btnSetPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +58,29 @@ public class DebugActivity extends ActionBarActivity {
                 startHelpSection();
             }
         });
+        btnSetPlayer = (Button) findViewById(R.id.debug_btn_setPlayer);
+        btnSetPlayer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setPlayer();
+            }
+        });
+    }
+
+    private void setPlayer() {
+        if(!LocalDao.parseInitialized.get()) {
+            // Enable Local Datastore.
+            ParseObject.registerSubclass(PGang.class);
+            ParseObject.registerSubclass(PTag.class);
+            ParseObject.registerSubclass(PPlayer.class);
+            ParseObject.registerSubclass(PTagImage.class);
+            Parse.enableLocalDatastore(DebugActivity.this);
+            Parse.initialize(DebugActivity.this, "SrnX83VPWR6P4iTiwvpjm5juIRACjkzWawoYcCii", "UwuqEExvBR3Qb7CKBBtBdY39421OewdU6R5q9YxD");
+            LocalDao.parseInitialized.set(true);
+        }
+        LocalDao.activity = this;
+        Intent intent = new Intent(this, PlayerListActivity.class);
+        startActivity(intent);
     }
 
     private void startGrapp() {

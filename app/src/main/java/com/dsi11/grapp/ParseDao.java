@@ -184,6 +184,20 @@ public class ParseDao {
         return players;
     }
 
+    public static List<Player> getAllPlayers(){
+        final ArrayList<Player> playerList = new ArrayList<>();
+        ParseQuery<PPlayer> query = ParseQuery.getQuery(PPlayer.class);
+        try {
+            List<PPlayer> objList = query.find();
+            for(PPlayer obj : objList){
+                playerList.add(parseObjectAsPlainPlayer(obj));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return playerList;
+    }
+
     /**
      * Returns a List of Players with this name. Should always be only one item.
      * If none is found, an empty List is returned.
@@ -281,6 +295,15 @@ public class ParseDao {
         }
         return tagList;
     }
+
+    /** Only Id and Name are set */
+    private static Player parseObjectAsPlainPlayer(PPlayer pO){
+        Player player = new Player();
+        player.id = pO.getObjectId();
+        player.name = pO.getName();
+        return player;
+    }
+
 
     private static Player parseObjectAsPlayer(PPlayer pO){
         Player player = new Player();
