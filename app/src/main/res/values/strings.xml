@@ -3,42 +3,43 @@
 
     <string name="app_name">Grapp</string>
     <string name="title_activity_maps">Map</string>
-    <string name="title_activity_new_user">Neuen User erstellen</string>
+    <string name="title_activity_new_user">Neuen Sprayer erstellen</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_new_gang">Neue Gang erstellen</string>
+    <string name="title_activity_new_gang">Gründe deine Gang</string>
     <string name="title_activity_draw_tag">Tag-Editor</string>
-    <string name="settings_bg_color_confirm">OK</string>
-    <string name="settings_default_color_confirm">Abbrechen</string>
-    <string name="settings_bg_color_dialog">Farbwähler</string>
+    <string name="settings_bg_color_confirm">YO</string>
+    <string name="settings_default_color_confirm">Näh, man</string>
+    <string name="settings_bg_color_dialog">Farbmische</string>
     <string name="title_activity_show_gang">Gang</string>
     <string name="title_activity_gang_list">Gang Übersicht</string>
-    <string name="new_gang_name_empty">Gib einen Namen ein</string>
-    <string name="new_gang_tag_empty">Erstelle einen Tag</string>
-    <string name="new_user_name_already_exists">Der Name ist schon vergeben.</string>
+    <string name="new_gang_name_empty">Gangname</string>
+    <string name="new_gang_tag_empty">Mach nen TAGG</string>
+    <string name="new_user_name_already_exists">Gibt's schon, alter.</string>
     <string name="title_dialog_choose_new_or_existing_gang">Die Gang</string>
-    <string name="dialog_message_choose_new_or_existing_gang">Willst du eine eigene Gang gründen oder dich einer bestehenden anschließen?</string>
+    <string name="dialog_message_choose_new_or_existing_gang">Willst ne eigene Gang, oder wo anschließen</string>
     <string name="dialog_positive_choose_new_or_existing_gang">Neue Gang</string>
-    <string name="dialog_negative_choose_new_or_existing_gang">bestehender Gang anschließen</string>
-    <string name="text_draw_tag">Erstelle einen Tag für deine Gang</string>
+    <string name="dialog_negative_choose_new_or_existing_gang">Gang anschließen</string>
+    <string name="text_draw_tag">Mach dein TAGG</string>
     <string name="title_gang_list">Gang Wählen</string>
-    <string name="text_gang_list">Wähle eine der Gangs an, um die Detail ansicht zu öffnen</string>
-    <string name="title_new_user">Nutzer anlegen</string>
+    <string name="text_gang_list">Wähle eine Gang, um mehr zu sehen</string>
+    <string name="title_new_user">Sprayer anlegen</string>
     <string name="text_new_user">Um deine Karriere als Sprayer zu beginnen, wähle deinen Namen</string>
-    <string name="title_show_gang">Gang Menü</string>
+    <string name="title_show_gang">DEINE GANG</string>
+
     <string name="title_tutorialentry_list">TutorialEntries</string>
     <string name="title_tutorialentry_detail">TutorialEntry Detail</string>
     <string name="title_activity_debug">Grapp Developer Tools</string>
-    <string name="tutorial_001_title">Erste Lektion</string>
-    <string name="tutorial_001_text">Der Text der ersten Lektion</string>
-    <string name="tutorial_002_title">Zweite Lektion</string>
-    <string name="tutorial_002_text">Der Text der zweiten Lektion</string>
-    <string name="tutorial_003_title">Und die dritte Section</string>
-    <string name="tutorial_003_text_001">Sehr, sehr viel Text: \nLorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
---
-Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
-Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</string>
+    <string name="tutorial_001_title">Erste Lektion: Regeln</string>
+    <string name="tutorial_001_text">Hör gut zu Bro, wenn du ein Gebiet einnehmen willst musst du wachsam bleiben. Macht deine Gang 3 Tags in einem Gebiet, kontrolliert ihr es.  Allerdings herrscht Krieg auf den Straßen! Das heißt eine feindliche Gang kann deine Tags jederzeit übersprayen und so versuchen die Kontrolle an sich zu reißen, aber das darfst du nicht zulassen! Wird dein Tag übersprayt musst du es zurückgewinnen, indem du ein neues Tag hinterlässt. </string>
+    <string name="tutorial_002_title">Zweite Lektion: Tagging</string>
+    <string name="tutorial_002_text">Grüne Spraydose: Die Luft ist rein – Zeig der Welt deine krassen Skills \n\n Rote Spraydose: Hier ist es im Moment zu Heiß – Verzieh dich!</string>
+    <string name="tutorial_003_title">Dritte Lektion: Gebiet einnehmen</string>
+    <string name="tutorial_003_text_001">3 Tags deiner Gang kontrollieren ein Gebiet</string>
+    <string name="tutorial_004_title">Vierte Lektion: Gebiet verteidigen</string>
+    <string name="tutorial_004_text">Feindliches Gang Tag übersprayen</string>
+    <string name="tutorial_005_title">Letze Lektion: Gang Menü</string>
+    <string name="tutorial_005_text">Hier kannst du einen Blick auf deine Homies werfen und dir dein Gang Tag ansehen.</string>
     <string name="tutorial_003_text_002">Der nächste Absatz</string>
     <string name="tutorial_003_text_003">Der nächste Absatz</string>
     <string name="title_activity_player_list">PlayerListActivity</string>
