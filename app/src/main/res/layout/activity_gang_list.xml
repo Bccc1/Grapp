@@ -9,7 +9,6 @@
         android:scaleType="fitXY"
         android:src="@drawable/ic_hintergrund"
         android:layout_gravity="center"
-        android:fontPath="@fonts/08 Underground.ttf"
         android:background="@drawable/ic_hintergrund" />
 
     <TextView android:text="@string/title_gang_list" android:layout_width="wrap_content"
