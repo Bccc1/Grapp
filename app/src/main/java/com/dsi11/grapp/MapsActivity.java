@@ -342,7 +342,8 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     private boolean checkSprayable(){
-        float tolerance = 10f; //10m abweichungen erlaubt.
+//        float tolerance = 10f; //10m abweichungen erlaubt.
+        float tolerance = 1f; //1m für Vorführung
         GangRegion region = getRegion(mLastLocation.getLongitude(), mLastLocation.getLatitude());
         if(region.getTags()==null || region.getTags().size()<3){
             Log.i(TAG + " - checkSprayable", "region tags is null: "+(region.getTags()==null)+ (!(region.getTags()==null) ? (", size is: "+region.getTags().size()) : " "));
@@ -648,7 +649,7 @@ public class MapsActivity extends FragmentActivity implements
         mLastLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         updateUI();
-
+        showUserPos();
     }
 
     private void updateUI(){
