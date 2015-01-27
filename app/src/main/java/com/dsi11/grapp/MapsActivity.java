@@ -49,7 +49,9 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MapsActivity extends FragmentActivity implements
@@ -79,6 +81,11 @@ public class MapsActivity extends FragmentActivity implements
     private String mLastUpdateTime;
     private Marker userPos;
     private Tag mTempTag;
+    private String checkSprayableMessage;
+
+    private final int grSize = 3;
+    private Tag toBeRetagged;
+    private HashMap<String,Marker> mMapMarker = new HashMap<>();
 
 
     @Override
@@ -286,7 +293,11 @@ public class MapsActivity extends FragmentActivity implements
                 }
                 startActivityForResult(tagIntent,SPRAY_TAG_REQUEST);
             }else{
-                showMessage("Du kannst hier nix ausrichten, Feindgebiet!!");
+                if(checkSprayableMessage!=null){
+                    showMessage(checkSprayableMessage);
+                }else {
+                    showMessage("Du kannst hier nix ausrichten, Feindgebiet!!"); //Fallback text
+                }
             }
         }
     }
@@ -302,8 +313,9 @@ public class MapsActivity extends FragmentActivity implements
                     }
                 }
             });
-            addTempTagMarkerToMap();    //TODO alten Tag marker entfernen
+            addTempTagMarkerToMap(); //Old Marker gets deleted here
             tags.add(mTempTag);
+            tags.remove(toBeRetagged);
             //recalculateRegions(); //Wozu war das gut?
 
             //get the region of the tag, remove from Map and add again
@@ -319,7 +331,7 @@ public class MapsActivity extends FragmentActivity implements
             addRegionToMap(gr);
             //setUpMap();
             mTempTag = null;
-            showMessage("Fettes Tag bro");
+            showMessage("Fettes Tag, Bro!");
         }
     }
 
@@ -334,44 +346,66 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     private void addTempTagMarkerToMap(){
-        mMap.addMarker(new MarkerOptions()
+        Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(mTempTag.latitude, mTempTag.longitude))
-                .anchor(0.5f,0.5f)//Center the Marker on the Position
-                .title(mTempTag.gang.name+" - "+mTempTag.timestamp))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(TagImageHelper.tagAsBitmapIcon(mTempTag.gang.tag.image, mTempTag.gang.color)));
+                .anchor(0.5f, 0.5f)//Center the Marker on the Position
+                .title(mTempTag.gang.name + " - " + mTempTag.timestamp));
+        marker.setIcon(BitmapDescriptorFactory.fromBitmap(TagImageHelper.tagAsBitmapIcon(mTempTag.gang.tag.image, mTempTag.gang.color)));
+
+        //check if marker exists at that exact location and if, delete it
+        Marker oldMarker = mMapMarker.get(calcMarkerId(marker));
+        if(oldMarker != null) {
+            mMapMarker.remove(calcMarkerId(marker));
+            oldMarker.remove();
+        }
+
+        mMapMarker.put(calcMarkerId(marker),marker);
     }
 
-    private boolean checkSprayable(){
+    private String calcMarkerId(Marker marker){
+        if(marker != null && marker.getPosition() != null){
+            return "lat"+marker.getPosition().latitude+"long"+marker.getPosition().longitude;
+        }
+        Log.w(TAG, "calcMarkerId had a nullpointer and returned dummy data. Fix this!!");
+        return "Failure"+new Random().nextInt(99999);
+    }
+
+      private boolean checkSprayable(){
 //        float tolerance = 10f; //10m abweichungen erlaubt.
         float tolerance = 1f; //1m für Vorführung
         GangRegion region = getRegion(mLastLocation.getLongitude(), mLastLocation.getLatitude());
-        if(region.getTags()==null || region.getTags().size()<3){
-            Log.i(TAG + " - checkSprayable", "region tags is null: "+(region.getTags()==null)+ (!(region.getTags()==null) ? (", size is: "+region.getTags().size()) : " "));
+        if(region.getTags()==null || region.getTags().size()<grSize){    //region has less than 3 tags
+            Log.d(TAG + " - checkSprayable", "region tags is null: "+(region.getTags()==null)+ (!(region.getTags()==null) ? (", size is: "+region.getTags().size()) : " "));
             boolean tooClose = false;
             for(Tag tag : region.getTags()){
-                Log.i(TAG + " - checkSprayable","checking tag "+tag.id+", "+tag.gang.name);
+                Log.d(TAG + " - checkSprayable","checking tag "+tag.id+", "+tag.gang.name);
+                if(tag.gang.id.equals(LocalDao.getPlayer().gang.id)) { //checked tag is owned by players gang
                     float[] result = new float[1];
-                    Location.distanceBetween(mLastLocation.getLatitude(),mLastLocation.getLongitude(),tag.latitude,tag.longitude,result);
-                    Log.i(TAG + " - checkSprayable","distance player-tag is "+result[0]);
-                    if(result[0]<(2*tolerance)){
+                    Location.distanceBetween(mLastLocation.getLatitude(), mLastLocation.getLongitude(), tag.latitude, tag.longitude, result);
+                    Log.d(TAG + " - checkSprayable", "distance player-tag is " + result[0]);
+                    if (result[0] < (2 * tolerance)) {
                         tooClose = true;
-                        Log.i(TAG + " - checkSprayable","player is too close to a tag.");
+                        checkSprayableMessage = "Warum die Mühe? Hier hast du schon!";
+                        Log.d(TAG + " - checkSprayable", "player is too close to a tag.");
                         break;
                     }
+                }
             }
             return !tooClose;
-        }else{
+        }else{ //region has 3 or more tags -> is full
             for(Tag tag : region.getTags()){
-                Log.i(TAG + " - checkSprayable","checking tag "+tag.id+", "+tag.gang.name);
+                Log.d(TAG + " - checkSprayable","checking tag "+tag.id+", "+tag.gang.name);
                 if(!tag.gang.id.equals(LocalDao.getPlayer().gang.id)){
                     float[] result = new float[1];
                     Location.distanceBetween(mLastLocation.getLatitude(),mLastLocation.getLongitude(),tag.latitude,tag.longitude,result);
-                    Log.i(TAG + " - checkSprayable","distance player-tag is "+result[0]);
+                    Log.d(TAG + " - checkSprayable","distance player-tag is "+result[0]);
                     if(result[0]<tolerance){
+                        toBeRetagged = tag;
                         return true;
                     }
                 }
             }
+            checkSprayableMessage =  "Du kannst hier nix ausrichten, Feindgebiet!";
         }
         return false;
     }
@@ -484,11 +518,12 @@ public class MapsActivity extends FragmentActivity implements
 
     private void addTagsToMap() {
         for(Tag tag : tags){
-            mMap.addMarker(new MarkerOptions()
+            Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(tag.latitude, tag.longitude))
-                    .anchor(0.5f,0.5f)//Center the Marker on the Position
-                    .title(tag.gang.name+" - "+tag.timestamp))
-                    .setIcon(BitmapDescriptorFactory.fromBitmap(CachedParseData.getTagImageIconByGang(tag.gang.id)));
+                    .anchor(0.5f, 0.5f)//Center the Marker on the Position
+                    .title(tag.gang.name + " - " + tag.timestamp));
+            marker.setIcon(BitmapDescriptorFactory.fromBitmap(CachedParseData.getTagImageIconByGang(tag.gang.id)));
+            mMapMarker.put(calcMarkerId(marker),marker);
         }
     }
 
