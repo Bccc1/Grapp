@@ -278,8 +278,13 @@ public class MapsActivity extends FragmentActivity implements
                 Tag tag = new Tag();
                 Player player = LocalDao.getPlayer();
                 tag.gang=player.gang;
-                tag.latitude=mLastLocation.getLatitude();
-                tag.longitude=mLastLocation.getLongitude();
+                if(toBeRetagged!=null){ //Wenn etwas übersprüht werden soll
+                    tag.longitude=toBeRetagged.longitude;
+                    tag.latitude=toBeRetagged.latitude;
+                }else{ //normalfall, ein neues Tag
+                    tag.latitude=mLastLocation.getLatitude();
+                    tag.longitude=mLastLocation.getLongitude();
+                }
                 tag.timestamp=Calendar.getInstance().getTime();
                 mTempTag = tag; //ekliger workaround, da ich den Tag nicht an die Activity geben will wg Serializable und so
 
@@ -314,8 +319,9 @@ public class MapsActivity extends FragmentActivity implements
                 }
             });
             addTempTagMarkerToMap(); //Old Marker gets deleted here
-            tags.add(mTempTag);
             tags.remove(toBeRetagged);
+            tags.add(mTempTag);
+            toBeRetagged = null;
             //recalculateRegions(); //Wozu war das gut?
 
             //get the region of the tag, remove from Map and add again
@@ -332,6 +338,7 @@ public class MapsActivity extends FragmentActivity implements
             //setUpMap();
             mTempTag = null;
             showMessage("Fettes Tag, Bro!");
+            updateUI();
         }
     }
 
@@ -401,6 +408,7 @@ public class MapsActivity extends FragmentActivity implements
                     Log.d(TAG + " - checkSprayable","distance player-tag is "+result[0]);
                     if(result[0]<tolerance){
                         toBeRetagged = tag;
+                        Log.d(TAG + " - checkSprayable","toBeRetagged:"+toBeRetagged.id+", "+toBeRetagged.gang+", lat: "+toBeRetagged.latitude+", long: "+toBeRetagged.longitude);
                         return true;
                     }
                 }
@@ -505,6 +513,7 @@ public class MapsActivity extends FragmentActivity implements
      */
     private void setUpMap() {//TODO Performance messung der einzelnen Abschnitte
         mMap.clear();
+        mMapMarker.clear();
 //        tags = ParseDao.getAllTagsFullyLoaded();
         tags = ParseDao.getAllTags();
         oldTags.clear();
