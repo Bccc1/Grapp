@@ -290,14 +290,19 @@ public class MapsActivity extends FragmentActivity implements
         if(mTempTag!=null) {
             ParseDao.addTagEventually(mTempTag);
             addTempTagMarkerToMap();    //TODO alten Tag marker entfernen
-            recalculateRegions();
+            tags.add(mTempTag);
+            //recalculateRegions(); //Wozu war das gut?
 
             //get the region of the tag, remove from Map and add again
             //TODO evtl. einfach updaten statt neu machen
             GangRegion gr = getRegion(mTempTag.longitude,mTempTag.latitude);
             if(gr.regionPolygon != null) {
                 gr.regionPolygon.remove();
+            }else{
+                //region is new, do some shit
             }
+            gr.addTag(mTempTag);
+            gr.whoIsTheBoss();
             addRegionToMap(gr);
             //setUpMap();
             mTempTag = null;
@@ -627,17 +632,6 @@ public class MapsActivity extends FragmentActivity implements
         if(requestCode == SPRAY_TAG_REQUEST){
             if(resultCode == RESULT_OK){
                 addTag();
-
-//                if(data != null && data.hasExtra(DrawTagActivity.PARAM_PATH)) {
-//                    Bundle b = data.getExtras();
-//                    SerializablePath path = (SerializablePath) b.getSerializable(DrawTagActivity.PARAM_PATH);
-//                    if (path != null) {
-//                        this.path = path;
-//                        refreshTagView();
-//                    } else {
-//                        Log.w("NewGangActivity", "EditTag resulted in path being empty");
-//                    }
-//                }
             }
         }
     }
