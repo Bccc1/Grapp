@@ -280,6 +280,8 @@ public class MapsActivity extends FragmentActivity implements
                     tagIntent.putExtra(DrawTagActivity.PARAM_PATH,tag.gang.tag.image);
                 }
                 startActivityForResult(tagIntent,SPRAY_TAG_REQUEST);
+            }else{
+                showMessage("Du kannst hier nix ausrichten, Feindgebiet!!");
             }
         }
     }
@@ -664,5 +666,9 @@ public class MapsActivity extends FragmentActivity implements
             super.onPostExecute(aBoolean);
             afterLoadingFinished();
         }
+    }
+
+    public void showMessage(String message){
+        Toast.makeText(this,message,Toast.LENGTH_LONG);
     }
 }
