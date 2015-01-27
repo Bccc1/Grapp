@@ -59,7 +59,7 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/showGang_txt_gangName"
         android:layout_marginTop="30dp"
-        android:textColor="#ff000000"
+        android:textColor="#ff4e4e4e"
         android:textSize="40dp"
         geekui:customTypeface="fonts/underground.ttf"/>
 
