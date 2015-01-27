@@ -28,7 +28,7 @@
             android:layout_centerHorizontal="true"
             android:paddingBottom="20dp"
             android:text="Gang gründen"
-            android:textSize="40dp"
+            android:textSize="55dp"
             geekui:customTypeface="fonts/underground.ttf"/>
 
         <com.dsi11.grapp.extlibs.TypefaceTextView
