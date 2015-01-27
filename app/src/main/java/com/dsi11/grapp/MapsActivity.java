@@ -9,10 +9,13 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dsi11.grapp.Core.GangRegion;
@@ -38,7 +41,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.SaveCallback;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -288,7 +293,15 @@ public class MapsActivity extends FragmentActivity implements
 
     private void addTag(){
         if(mTempTag!=null) {
-            ParseDao.addTagEventually(mTempTag);
+            ParseDao.addTagEventually(mTempTag, new SaveCallback(){
+                public void done(ParseException e){
+                    if (e == null) {
+                        tagAddedSuccessfully();
+                    } else {
+                        tagAddDidNotSucceed();
+                    }
+                }
+            });
             addTempTagMarkerToMap();    //TODO alten Tag marker entfernen
             tags.add(mTempTag);
             //recalculateRegions(); //Wozu war das gut?
@@ -306,8 +319,18 @@ public class MapsActivity extends FragmentActivity implements
             addRegionToMap(gr);
             //setUpMap();
             mTempTag = null;
-            Toast.makeText(getApplicationContext(), "Fettes Tag bro", Toast.LENGTH_LONG).show();
+            showMessage("Fettes Tag bro");
         }
+    }
+
+    private void tagAddDidNotSucceed() {
+        //showMessage("Tag konnte nicht gespeichert werden");
+        Log.i(TAG,"Tag konnte nicht gespeichert werden");
+    }
+
+    private void tagAddedSuccessfully() {
+        //showMessage("Tag wurde erfolgreich in Datenbank gespeichert");
+        Log.i(TAG,"Tag wurde erfolgreich in Datenbank gespeichert");
     }
 
     private void addTempTagMarkerToMap(){
@@ -673,6 +696,16 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     public void showMessage(String message){
-        Toast.makeText(this,message,Toast.LENGTH_LONG);
+        Display display = getWindowManager().getDefaultDisplay();
+        int height = display.getHeight();
+
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.TOP,0,(int)(height*0.2));
+
+        LinearLayout linearLayout = (LinearLayout) toast.getView();
+        TextView messageTextView = (TextView) linearLayout.getChildAt(0);
+        messageTextView.setTextSize(25);
+
+        toast.show();
     }
 }

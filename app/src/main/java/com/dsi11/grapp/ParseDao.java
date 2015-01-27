@@ -16,6 +16,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -469,9 +470,9 @@ public class ParseDao {
         return newTag;
     }
 
-    public static void addTagEventually(Tag mTag){
+    public static void addTagEventually(Tag mTag, SaveCallback mCallback){
         PTag tag = tagAsParseObject(mTag);
-        addPTagEventually(tag);
+        addPTagEventually(tag,mCallback);
         return;
     }
 
@@ -484,8 +485,12 @@ public class ParseDao {
         return tag;
     }
 
-    public static PTag addPTagEventually(PTag tag){
-        tag.saveEventually();
+    public static PTag addPTagEventually(PTag tag, SaveCallback mCallback){
+        if(mCallback == null) {
+            tag.saveEventually();
+        }else{
+            tag.saveEventually(mCallback);
+        }
         return tag;
     }
 
