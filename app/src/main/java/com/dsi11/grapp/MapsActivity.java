@@ -569,14 +569,24 @@ public class MapsActivity extends FragmentActivity implements
     private void showUserPos(){
         if(mMap!=null){
         if (mLastLocation != null) {
-            if(userPos!=null)
-                userPos.remove();
+            CameraPosition oldCameraPosition = mMap.getCameraPosition();
+            CameraPosition cameraPosition;
             LatLng position = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            if(userPos!=null){
+                userPos.remove();
+                //User was present -> only pan (keep zoom level)
+                cameraPosition = new CameraPosition.Builder()
+                        .target(position)
+                        .zoom(oldCameraPosition.zoom)
+                        .build();
+            }else{
+                //User wasn't present before -> zoom and pan
+                cameraPosition = new CameraPosition.Builder()
+                        .target(position)
+                        .zoom(15)
+                        .build();
+            }
             userPos=mMap.addMarker(new MarkerOptions().position(position).title("Meine Position"));
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(position)
-                    .zoom(15)
-                    .build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
         }
