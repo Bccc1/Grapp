@@ -24,7 +24,7 @@ public class TutorialEntryDetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_tutorialentry_detail);
 
         // Show the Up button in the action bar.
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
