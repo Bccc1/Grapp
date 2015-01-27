@@ -15,7 +15,7 @@
     <string name="title_activity_gang_list">Gang Übersicht</string>
     <string name="new_gang_name_empty">Gangname</string>
     <string name="new_gang_tag_empty">Mach nen TAGG</string>
-    <string name="new_user_name_already_exists">Gibt's schon, alter.</string>
+    <string name="new_user_name_already_exists">Gibt\'s schon, alter.</string>
     <string name="title_dialog_choose_new_or_existing_gang">Die Gang</string>
     <string name="dialog_message_choose_new_or_existing_gang">Willst ne eigene Gang, oder wo anschließen</string>
     <string name="dialog_positive_choose_new_or_existing_gang">Neue Gang</string>
@@ -35,13 +35,11 @@
     <string name="tutorial_002_title">Zweite Lektion: Tagging</string>
     <string name="tutorial_002_text">Grüne Spraydose: Die Luft ist rein – Zeig der Welt deine krassen Skills \n\n Rote Spraydose: Hier ist es im Moment zu Heiß – Verzieh dich!</string>
     <string name="tutorial_003_title">Dritte Lektion: Gebiet einnehmen</string>
-    <string name="tutorial_003_text_001">3 Tags deiner Gang kontrollieren ein Gebiet</string>
+    <string name="tutorial_003_text">3 Tags deiner Gang kontrollieren ein Gebiet</string>
     <string name="tutorial_004_title">Vierte Lektion: Gebiet verteidigen</string>
     <string name="tutorial_004_text">Feindliches Gang Tag übersprayen</string>
     <string name="tutorial_005_title">Letze Lektion: Gang Menü</string>
     <string name="tutorial_005_text">Hier kannst du einen Blick auf deine Homies werfen und dir dein Gang Tag ansehen.</string>
-    <string name="tutorial_003_text_002">Der nächste Absatz</string>
-    <string name="tutorial_003_text_003">Der nächste Absatz</string>
     <string name="title_activity_player_list">PlayerListActivity</string>
     <string name="text_player_list">Wähle einen Spieler um ihn zu setzten.</string>
     <string name="title_player_list">Spieler Wählen</string>

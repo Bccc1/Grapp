@@ -38,7 +38,9 @@ public class TutorialContent {
         // Add 3 sample items.
         addItem(new TutorialItem("001"));   //Simple Item, 1 Text, 0 or 1 Images
         addItem(new TutorialItem("002"));
-        addItem(new TutorialItem("003",3)); //Complex Item, up to 3 Texts, up to 3 Images
+        addItem(new TutorialItem("003"));
+        addItem(new TutorialItem("004"));
+        addItem(new TutorialItem("005"));
     }
 
     private static void addItem(TutorialItem item) {
