@@ -28,7 +28,7 @@
         android:id="@+id/showGang_txt_title"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:textSize="40dp"
+        android:textSize="55dp"
         android:textColor="#ff000000"
         android:paddingBottom="20dp"
         geekui:customTypeface="fonts/underground.ttf"/>
@@ -41,18 +41,27 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp" />
 
-    <TextView android:text="Deine Gang" android:layout_width="wrap_content"
+    <com.dsi11.grapp.extlibs.TypefaceTextView
+        android:text="Gangname"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/showGang_txt_gangName"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/showGang_imageView_tag"
-        android:layout_centerHorizontal="true" />
-    <TextView android:text="Member1\nMember2" android:layout_width="wrap_content"
+        android:textColor="#ff000000"
+        android:textSize="40dp"
+        android:layout_centerHorizontal="true"
+        geekui:customTypeface="fonts/underground.ttf"/>
+    <com.dsi11.grapp.extlibs.TypefaceTextView
+        android:text="Member1\nMember2" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/showGang_txt_memberList"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/showGang_txt_gangName"
-        android:layout_marginTop="30dp" />
+        android:layout_marginTop="30dp"
+        android:textColor="#ff000000"
+        android:textSize="40dp"
+        geekui:customTypeface="fonts/underground.ttf"/>
 
     <Button
         android:layout_width="wrap_content"
