@@ -100,6 +100,7 @@ public class MapsActivity extends FragmentActivity implements
             LocalDao.parseInitialized.set(savedInstanceState.getBoolean(PARAM_PARSE_INITIALIZED));
         }
 
+        //TODO Move onclickListener addition to afterLoadingFinished
         setContentView(R.layout.activity_maps);
         imageViewSprayBtn = (ImageView) findViewById(R.id.maps_imageView_sprayBtn);
         imageViewSplashScreen = (ImageView) findViewById(R.id.maps_imageView_splashScreen);
@@ -208,6 +209,7 @@ public class MapsActivity extends FragmentActivity implements
                     }
                     case MotionEvent.ACTION_UP: {   //OnClick
                         v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                        showInfo();
                     }
                     case MotionEvent.ACTION_CANCEL: {
                         ImageView view = (ImageView) v;
@@ -219,6 +221,11 @@ public class MapsActivity extends FragmentActivity implements
                 return true;
             }
         });
+    }
+
+    private void showInfo() {
+        Intent intent = new Intent(this,TutorialEntryListActivity.class);
+        startActivity(intent);
     }
 
     private void resizeGUI(){
@@ -482,6 +489,7 @@ public class MapsActivity extends FragmentActivity implements
     private void recalculateRegions() {
         regions = new ArrayList<GangRegion>();
         for(Tag tag : tags){
+            //FIXME Apperently a nullpointer exception is thrown here.
             GangRegion region = getRegion(tag.longitude,tag.latitude);
             region.addTag(tag);
         }
@@ -647,6 +655,8 @@ public class MapsActivity extends FragmentActivity implements
             }
             LocalDao.init(MapsActivity.this);
             return true;
+
+            //FIXME Somewhere between this and done() a runtime exception is thrown
         }
 
         @Override

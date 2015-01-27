@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:id="@+id/maps_imageView_rahmen"
             android:layout_gravity="center_horizontal|top"
-            android:src="@drawable/ic_mauerRand"
+            android:src="@drawable/ic_mauer_rand"
             android:scaleType="fitXY" />
 
         <ImageView
@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:id="@+id/maps_imageView_mainBar"
             android:layout_gravity="center_horizontal|bottom"
-            android:src="@drawable/ic_mauerRandUnten"
+            android:src="@drawable/ic_mauer_rand_unten"
             android:scaleType="fitXY" />
 
         <Button
