@@ -15,10 +15,18 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:id="@+id/maps_imageView_rahmen"
+            android:layout_gravity="center_horizontal|top"
+            android:src="@drawable/ic_mauerRand"
+            android:scaleType="fitXY" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:id="@+id/maps_imageView_mainBar"
             android:layout_gravity="center_horizontal|bottom"
-            android:src="@drawable/ic_main_bar02"
-            android:scaleType="fitEnd" />
+            android:src="@drawable/ic_mauerRandUnten"
+            android:scaleType="fitXY" />
 
         <Button
             android:layout_width="wrap_content"
@@ -37,7 +45,9 @@
             android:layout_height="50dp"
             android:layout_gravity="left|bottom"
             android:scaleType="fitXY"
-            android:src="@drawable/btn_gang" />
+            android:src="@drawable/btn_gang"
+            android:longClickable="false"
+            android:clickable="true" />
 
         <ImageView
             android:id="@+id/maps_imageView_infoBtn"
@@ -45,26 +55,18 @@
             android:layout_height="50dp"
             android:layout_gravity="right|bottom"
             android:scaleType="fitXY"
-            android:src="@drawable/btn_info" />
+            android:src="@drawable/btn_info"
+            android:clickable="true" />
 
         <ImageView
-            android:layout_width="123dp"
-            android:layout_height="230dp"
+            android:layout_width="88dp"
+            android:layout_height="164dp"
             android:id="@+id/maps_imageView_sprayBtn"
             android:src="@drawable/ic_spray_impossible"
             android:layout_marginTop="0dp"
             android:layout_marginLeft="0dp"
             android:layout_gravity="center_horizontal|bottom" />
 
-
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/maps_imageView_rahmen"
-            android:layout_gravity="center_horizontal|top"
-            android:src="@drawable/ic_rahmen"
-            android:scaleType="fitXY" />
 
     </FrameLayout>
 
