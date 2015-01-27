@@ -9,15 +9,19 @@
         android:scaleType="fitXY"
         android:src="@drawable/ic_hintergrund"
         android:layout_gravity="center"
+        android:fontPath="@fonts/08 Underground.ttf"
         android:background="@drawable/ic_hintergrund" />
 
     <TextView android:text="@string/title_gang_list" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/gangList_textView_title"
-        android:layout_centerHorizontal="true"
         android:textSize="40dp"
         android:paddingTop="16dp"
-        android:paddingBottom="20dp" />
+        android:paddingBottom="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:fontPath="@fonts/underground.ttf"
+        android:textColor="#ff000000" />/>/>
 
     <TextView android:text="@string/text_gang_list" android:layout_width="wrap_content"
         android:layout_marginLeft="20dp"
