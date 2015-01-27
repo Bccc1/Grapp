@@ -25,6 +25,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:textSize="40dp"
+        android:fontPath="@fonts/underground.ttf"
+        android:textColor="#ff000000"
         android:paddingBottom="20dp"/>
 
     <ImageView
