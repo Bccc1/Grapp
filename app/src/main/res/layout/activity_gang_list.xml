@@ -34,7 +34,7 @@
         android:layout_centerHorizontal="true"
         geekui:customTypeface="fonts/underground.ttf"/>
 
-    <com.dsi11.grapp.extlibs.TypefaceTextView
+    <ListView
         android:layout_width="wrap_content"
         android:textSize="40dp"
         android:layout_height="wrap_content"
@@ -45,6 +45,6 @@
         android:layout_alignStart="@+id/gangList_textView_title"
         android:layout_centerInParent="true"
         android:smoothScrollbar="true"
-        geekui:customTypeface="fonts/underground.ttf"/>
+        />
 
 </RelativeLayout>
