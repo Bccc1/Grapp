@@ -1,6 +1,7 @@
 package com.dsi11.grapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,13 +18,15 @@ import com.parse.Parse;
 import com.parse.ParseObject;
 
 
-public class DebugActivity extends ActionBarActivity {
+public class DebugActivity extends ActionBarActivity implements ColorPickerDialog.OnColorChangedListener {
 
     private Button btnReset;
     private Button btnStart;
     private Button btnStartWOTagLoading;
     private Button btnStartHelp;
     private Button btnSetPlayer;
+    private Button btnColorPicker;
+    private int mColor = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,13 @@ public class DebugActivity extends ActionBarActivity {
                 setPlayer();
             }
         });
+        btnColorPicker = (Button) findViewById(R.id.debug_btn_openColorPicker);
+        btnColorPicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openColorPicker();
+            }
+        });
     }
 
     private void setPlayer() {
@@ -103,6 +113,11 @@ public class DebugActivity extends ActionBarActivity {
         finish();
     }
 
+    private void openColorPicker(){
+        ColorPickerDialog color = new ColorPickerDialog(this,this, "picker", Color.BLACK, mColor);
+        color.show();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -124,5 +139,10 @@ public class DebugActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void colorChanged(String key, int color) {
+        mColor = color;
     }
 }
