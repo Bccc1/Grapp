@@ -578,7 +578,7 @@ public class MapsActivity extends FragmentActivity implements
             Double longitude = t.longitude;
             Date timestamp = t.timestamp;
             for(Tag t2 : tags){
-                if(t2.latitude==latitude && t2.longitude==longitude && timestamp.before(t2.timestamp)){
+                if(t2.latitude.equals(latitude) && t2.longitude.equals(longitude) && timestamp.before(t2.timestamp)){
                     oldTags.add(t);
                     Log.i(TAG,"Tag was added to oldTags"+t.id+" - "+t.gang.name+" - "+t.timestamp);
                     break;
