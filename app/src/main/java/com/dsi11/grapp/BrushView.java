@@ -97,8 +97,12 @@ public class BrushView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawPath(bgPath,bgBrush);
-        canvas.drawPath(path, brush);
+        if(bgPath!=null && bgBrush != null) {
+            canvas.drawPath(bgPath, bgBrush);
+        }
+        if(path != null && brush != null){
+            canvas.drawPath(path, brush);
+        }
     }
 
     @Override

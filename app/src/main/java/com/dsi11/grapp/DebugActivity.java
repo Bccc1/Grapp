@@ -33,6 +33,7 @@ public class DebugActivity extends ActionBarActivity {
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LocalDao.activity = DebugActivity.this;
                 LocalDao.reset();
                 Toast.makeText(DebugActivity.this,"Player successfully reset",Toast.LENGTH_LONG).show();
             }

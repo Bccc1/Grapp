@@ -139,6 +139,7 @@ public class MapsActivity extends FragmentActivity implements
         }else{
             Intent intent = new Intent(this, NewUserActivity.class);
             startActivity(intent);
+            LocalDao.init(this);
         }
 
         attachGuiListeners();
@@ -150,6 +151,7 @@ public class MapsActivity extends FragmentActivity implements
         SoundUtils.init(this);
         resizeGUI();
         hideSplashScreen();
+
     }
 
     private void attachGuiListeners(){
@@ -293,7 +295,7 @@ public class MapsActivity extends FragmentActivity implements
                 //Es sollte ein Flag gesetzt werden, das es sich ums taggen handelt
                 tagIntent.putExtra(DrawTagActivity.PARAM_SPRAY_MODE,true);
                 //Der Pfad sollte mitgeliefert werden, um den Hintergrund zu zeichnen
-                if(tag.gang.tag.image!=null){
+                if(tag.gang.tag != null && tag.gang.tag.image != null){
                     tagIntent.putExtra(DrawTagActivity.PARAM_PATH,tag.gang.tag.image);
                 }
                 startActivityForResult(tagIntent,SPRAY_TAG_REQUEST);
@@ -692,8 +694,10 @@ public class MapsActivity extends FragmentActivity implements
     public void onLocationChanged(Location location) {
         mLastLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        updateUI();
-        showUserPos();
+        if(LocalDao.playerCompletelyInitialized){
+            updateUI();
+            showUserPos();
+        }
     }
 
     private void updateUI(){

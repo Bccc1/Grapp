@@ -19,6 +19,7 @@ public class LocalDao {
     private static final String PREFS_NAME = "MyPrefsFile";
     private static final String PREFS_PLAYER_ID = "PlayerId";
     public static AtomicBoolean parseInitialized = new AtomicBoolean(false);
+    public static boolean playerCompletelyInitialized = false;
 
     public static void init(Activity activity){
         LocalDao.activity = activity;
@@ -42,6 +43,7 @@ public class LocalDao {
         // Commit the edits!
         editor.commit();
 
+        playerCompletelyInitialized = true;
     }
 
     public static void loadPlayerById(String id) {
